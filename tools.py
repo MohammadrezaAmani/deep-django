@@ -5,7 +5,7 @@ from typing import List
 
 import aiofiles
 
-PATH = "."
+PATH = "celery"
 LANG = "fa"
 
 
