@@ -1,7 +1,5 @@
 import json
 
-from django.test import override_settings
-
 import pytest
 
 from allauth.account.models import EmailAddress
@@ -17,6 +15,7 @@ from allauth.socialaccount.providers.amazon_cognito.views import (
 )
 from allauth.socialaccount.tests import OAuth2TestsMixin
 from allauth.tests import MockedResponse, TestCase
+from django.test import override_settings
 
 
 def _get_mocked_claims():

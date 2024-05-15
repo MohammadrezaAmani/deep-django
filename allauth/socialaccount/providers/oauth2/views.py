@@ -1,12 +1,7 @@
 from datetime import timedelta
-from requests import RequestException
 from typing import Dict, Optional
 
-from django.conf import settings
-from django.core.exceptions import PermissionDenied
-from django.shortcuts import render
-from django.urls import reverse
-from django.utils import timezone
+from requests import RequestException
 
 from allauth.account import app_settings as account_settings
 from allauth.core.exceptions import ImmediateHttpResponse
@@ -21,11 +16,13 @@ from allauth.socialaccount.models import SocialToken
 from allauth.socialaccount.providers.base import ProviderException
 from allauth.socialaccount.providers.base.constants import AuthError
 from allauth.socialaccount.providers.base.mixins import OAuthLoginMixin
-from allauth.socialaccount.providers.oauth2.client import (
-    OAuth2Client,
-    OAuth2Error,
-)
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client, OAuth2Error
 from allauth.utils import build_absolute_uri, get_request_param
+from django.conf import settings
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import render
+from django.urls import reverse
+from django.utils import timezone
 
 
 class OAuth2Adapter(object):

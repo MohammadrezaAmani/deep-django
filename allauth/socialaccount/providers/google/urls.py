@@ -1,10 +1,8 @@
-from django.urls import path
-
 from allauth.socialaccount.providers.google import views
 from allauth.socialaccount.providers.oauth2.urls import default_urlpatterns
+from django.urls import path
 
 from .provider import GoogleProvider
-
 
 urlpatterns = default_urlpatterns(GoogleProvider)
 

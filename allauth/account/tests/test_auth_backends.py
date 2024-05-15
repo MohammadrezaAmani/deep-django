@@ -1,9 +1,8 @@
-from django.contrib.auth import get_user_model
-from django.test.utils import override_settings
-
 from allauth.account import app_settings
 from allauth.account.auth_backends import AuthenticationBackend
 from allauth.tests import TestCase
+from django.contrib.auth import get_user_model
+from django.test.utils import override_settings
 
 
 class AuthenticationBackendTests(TestCase):

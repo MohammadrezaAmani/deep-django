@@ -1,7 +1,6 @@
-from django.shortcuts import render
-
 from allauth.account import app_settings as account_app_settings
 from allauth.socialaccount import app_settings
+from django.shortcuts import render
 
 
 def respond_to_login_on_get(request, provider):

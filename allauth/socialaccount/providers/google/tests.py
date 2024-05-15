@@ -3,13 +3,6 @@ from datetime import datetime, timedelta
 from importlib import import_module
 from unittest.mock import Mock, patch
 
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.core import mail
-from django.test.client import RequestFactory
-from django.test.utils import override_settings
-from django.urls import reverse
-
 import pytest
 
 from allauth.account import app_settings as account_settings
@@ -22,6 +15,12 @@ from allauth.socialaccount.providers.apple.client import jwt_encode
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.tests import OAuth2TestsMixin
 from allauth.tests import TestCase, mocked_response
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core import mail
+from django.test.client import RequestFactory
+from django.test.utils import override_settings
+from django.urls import reverse
 
 from .provider import GoogleProvider
 

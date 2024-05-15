@@ -1,9 +1,8 @@
 from urllib.parse import parse_qsl
 
+from allauth.socialaccount.providers.base import Provider
 from django.urls import reverse
 from django.utils.http import urlencode
-
-from allauth.socialaccount.providers.base import Provider
 
 
 class OAuthProvider(Provider):

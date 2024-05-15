@@ -1,9 +1,9 @@
-import requests
 from urllib.parse import parse_qsl
 
-from django.utils.http import urlencode
+import requests
 
 from allauth.socialaccount.adapter import get_adapter
+from django.utils.http import urlencode
 
 
 class OAuth2Error(Exception):

@@ -1,9 +1,8 @@
-from django.http import HttpResponseRedirect, HttpResponseServerError
-from django.urls import NoReverseMatch, reverse
-
 from allauth import app_settings as allauth_settings
 from allauth.account.stages import LoginStage
 from allauth.mfa.utils import is_mfa_enabled
+from django.http import HttpResponseRedirect, HttpResponseServerError
+from django.urls import NoReverseMatch, reverse
 
 
 class AuthenticateStage(LoginStage):

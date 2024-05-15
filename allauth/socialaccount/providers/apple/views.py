@@ -1,12 +1,6 @@
 import json
 from datetime import timedelta
 
-from django.http import HttpResponseNotAllowed, HttpResponseRedirect
-from django.urls import reverse
-from django.utils import timezone
-from django.utils.http import urlencode
-from django.views.decorators.csrf import csrf_exempt
-
 from allauth.socialaccount.internal import jwtkit
 from allauth.socialaccount.models import SocialToken
 from allauth.socialaccount.providers.oauth2.views import (
@@ -15,6 +9,11 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2LoginView,
 )
 from allauth.utils import build_absolute_uri, get_request_param
+from django.http import HttpResponseNotAllowed, HttpResponseRedirect
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.http import urlencode
+from django.views.decorators.csrf import csrf_exempt
 
 from .apple_session import get_apple_session
 from .client import AppleOAuth2Client

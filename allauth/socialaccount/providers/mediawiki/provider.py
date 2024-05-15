@@ -1,14 +1,10 @@
 from typing import Optional
 
-from django.conf import settings
-
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.providers.base import ProviderAccount
-from allauth.socialaccount.providers.mediawiki.views import (
-    MediaWikiOAuth2Adapter,
-)
+from allauth.socialaccount.providers.mediawiki.views import MediaWikiOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
-
+from django.conf import settings
 
 settings = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get("mediawiki", {})
 

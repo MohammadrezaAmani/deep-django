@@ -2,7 +2,6 @@ from allauth.account.adapter import get_adapter
 from allauth.account.authentication import record_authentication
 from allauth.core.exceptions import ImmediateHttpResponse
 
-
 LOGIN_SESSION_KEY = "account_login"
 
 

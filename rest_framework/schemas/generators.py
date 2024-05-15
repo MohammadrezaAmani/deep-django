@@ -11,7 +11,6 @@ from django.contrib.admindocs.views import simplify_regex
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.urls import URLPattern, URLResolver
-
 from rest_framework import exceptions
 from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
@@ -29,24 +28,21 @@ def is_api_view(callback):
     """
     # Avoid import cycle on APIView
     from rest_framework.views import APIView
-    cls = getattr(callback, 'cls', None)
+
+    cls = getattr(callback, "cls", None)
     return (cls is not None) and issubclass(cls, APIView)
 
 
 def endpoint_ordering(endpoint):
     path, method, callback = endpoint
-    method_priority = {
-        'GET': 0,
-        'POST': 1,
-        'PUT': 2,
-        'PATCH': 3,
-        'DELETE': 4
-    }.get(method, 5)
+    method_priority = {"GET": 0, "POST": 1, "PUT": 2, "PATCH": 3, "DELETE": 4}.get(
+        method, 5
+    )
     return (method_priority,)
 
 
 _PATH_PARAMETER_COMPONENT_RE = re.compile(
-    r'<(?:(?P<converter>[^>:]+):)?(?P<parameter>\w+)>'
+    r"<(?:(?P<converter>[^>:]+):)?(?P<parameter>\w+)>"
 )
 
 
@@ -54,6 +50,7 @@ class EndpointEnumerator:
     """
     A class to determine the available API endpoints that a project exposes.
     """
+
     def __init__(self, patterns=None, urlconf=None):
         if patterns is None:
             if urlconf is None:
@@ -69,7 +66,7 @@ class EndpointEnumerator:
 
         self.patterns = patterns
 
-    def get_api_endpoints(self, patterns=None, prefix=''):
+    def get_api_endpoints(self, patterns=None, prefix=""):
         """
         Return a list of all available API endpoints by inspecting the URL conf.
         """
@@ -90,8 +87,7 @@ class EndpointEnumerator:
 
             elif isinstance(pattern, URLResolver):
                 nested_endpoints = self.get_api_endpoints(
-                    patterns=pattern.url_patterns,
-                    prefix=path_regex
+                    patterns=pattern.url_patterns, prefix=path_regex
                 )
                 api_endpoints.extend(nested_endpoints)
 
@@ -108,7 +104,7 @@ class EndpointEnumerator:
         path = simplify_regex(path_regex)
 
         # Strip Django 2.0 converters as they are incompatible with uritemplate format
-        return re.sub(_PATH_PARAMETER_COMPONENT_RE, r'{\g<parameter>}', path)
+        return re.sub(_PATH_PARAMETER_COMPONENT_RE, r"{\g<parameter>}", path)
 
     def should_include_endpoint(self, path, callback):
         """
@@ -120,11 +116,11 @@ class EndpointEnumerator:
         if callback.cls.schema is None:
             return False
 
-        if 'schema' in callback.initkwargs:
-            if callback.initkwargs['schema'] is None:
+        if "schema" in callback.initkwargs:
+            if callback.initkwargs["schema"] is None:
                 return False
 
-        if path.endswith('.{format}') or path.endswith('.{format}/'):
+        if path.endswith(".{format}") or path.endswith(".{format}/"):
             return False  # Ignore .json style URLs.
 
         return True
@@ -133,14 +129,14 @@ class EndpointEnumerator:
         """
         Return a list of the valid HTTP methods for this endpoint.
         """
-        if hasattr(callback, 'actions'):
+        if hasattr(callback, "actions"):
             actions = set(callback.actions)
             http_method_names = set(callback.cls.http_method_names)
             methods = [method.upper() for method in actions & http_method_names]
         else:
             methods = callback.cls().allowed_methods
 
-        return [method for method in methods if method not in ('OPTIONS', 'HEAD')]
+        return [method for method in methods if method not in ("OPTIONS", "HEAD")]
 
 
 class BaseSchemaGenerator:
@@ -151,9 +147,17 @@ class BaseSchemaGenerator:
     # Set by 'SCHEMA_COERCE_PATH_PK'.
     coerce_path_pk = None
 
-    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None, version=None):
-        if url and not url.endswith('/'):
-            url += '/'
+    def __init__(
+        self,
+        title=None,
+        url=None,
+        description=None,
+        patterns=None,
+        urlconf=None,
+        version=None,
+    ):
+        if url and not url.endswith("/"):
+            url += "/"
 
         self.coerce_path_pk = api_settings.SCHEMA_COERCE_PATH_PK
 
@@ -188,17 +192,17 @@ class BaseSchemaGenerator:
         """
         Given a callback, return an actual view instance.
         """
-        view = callback.cls(**getattr(callback, 'initkwargs', {}))
+        view = callback.cls(**getattr(callback, "initkwargs", {}))
         view.args = ()
         view.kwargs = {}
         view.format_kwarg = None
         view.request = None
-        view.action_map = getattr(callback, 'actions', None)
+        view.action_map = getattr(callback, "actions", None)
 
-        actions = getattr(callback, 'actions', None)
+        actions = getattr(callback, "actions", None)
         if actions is not None:
-            if method == 'OPTIONS':
-                view.action = 'metadata'
+            if method == "OPTIONS":
+                view.action = "metadata"
             else:
                 view.action = actions.get(method.lower())
 
@@ -213,14 +217,14 @@ class BaseSchemaGenerator:
         where possible. This is cleaner for an external representation.
         (Ie. "this is an identifier", not "this is a database primary key")
         """
-        if not self.coerce_path_pk or '{pk}' not in path:
+        if not self.coerce_path_pk or "{pk}" not in path:
             return path
-        model = getattr(getattr(view, 'queryset', None), 'model', None)
+        model = getattr(getattr(view, "queryset", None), "model", None)
         if model:
             field_name = get_pk_name(model)
         else:
-            field_name = 'id'
-        return path.replace('{pk}', '{%s}' % field_name)
+            field_name = "id"
+        return path.replace("{pk}", "{%s}" % field_name)
 
     def get_schema(self, request=None, public=False):
         raise NotImplementedError(".get_schema() must be implemented in subclasses.")

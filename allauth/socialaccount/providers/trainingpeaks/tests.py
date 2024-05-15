@@ -7,10 +7,9 @@ from __future__ import unicode_literals
 
 from collections import namedtuple
 
-from django.test.utils import override_settings
-
 from allauth.socialaccount.tests import OAuth2TestsMixin
 from allauth.tests import MockedResponse, TestCase
+from django.test.utils import override_settings
 
 from .provider import TrainingPeaksProvider
 from .views import TrainingPeaksOAuth2Adapter

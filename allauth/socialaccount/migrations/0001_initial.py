@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from allauth import app_settings
 from django.conf import settings
 from django.db import migrations, models
-
-from allauth import app_settings
 
 
 class Migration(migrations.Migration):

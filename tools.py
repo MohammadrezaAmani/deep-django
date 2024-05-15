@@ -1,8 +1,9 @@
-from typing import List
-import json
 import asyncio
-import aiofiles
+import json
 import os
+from typing import List
+
+import aiofiles
 
 PATH = "allauth"
 

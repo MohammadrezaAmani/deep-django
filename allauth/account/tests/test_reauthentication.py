@@ -1,12 +1,11 @@
 from unittest.mock import ANY
 
-from django.urls import reverse
-
 import pytest
 from pytest_django.asserts import assertTemplateUsed
 
 from allauth.account.adapter import get_adapter
 from allauth.account.authentication import AUTHENTICATION_METHODS_SESSION_KEY
+from django.urls import reverse
 
 
 @pytest.mark.parametrize(

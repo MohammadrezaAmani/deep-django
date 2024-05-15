@@ -1,5 +1,3 @@
-from django.utils.translation import gettext_lazy as _
-
 from allauth import app_settings as allauth_settings
 from allauth.account.adapter import get_adapter as get_account_adapter
 from allauth.account.utils import user_email, user_username
@@ -8,6 +6,7 @@ from allauth.core.internal.adapter import BaseAdapter
 from allauth.mfa import app_settings
 from allauth.mfa.models import Authenticator
 from allauth.utils import import_attribute
+from django.utils.translation import gettext_lazy as _
 
 
 class DefaultMFAAdapter(BaseAdapter):

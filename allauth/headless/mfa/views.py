@@ -1,8 +1,5 @@
 from allauth.headless.base.response import AuthenticationResponse
-from allauth.headless.base.views import (
-    AuthenticatedAPIView,
-    AuthenticationStageAPIView,
-)
+from allauth.headless.base.views import AuthenticatedAPIView, AuthenticationStageAPIView
 from allauth.headless.mfa import response
 from allauth.headless.mfa.inputs import (
     ActivateTOTPInput,

@@ -3,20 +3,21 @@ Content negotiation deals with selecting an appropriate renderer given the
 incoming request.  Typically this will be based on the request's Accept header.
 """
 from django.http import Http404
-
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
 from rest_framework.utils.mediatypes import (
-    _MediaType, media_type_matches, order_by_precedence
+    _MediaType,
+    media_type_matches,
+    order_by_precedence,
 )
 
 
 class BaseContentNegotiation:
     def select_parser(self, request, parsers):
-        raise NotImplementedError('.select_parser() must be implemented')
+        raise NotImplementedError(".select_parser() must be implemented")
 
     def select_renderer(self, request, renderers, format_suffix=None):
-        raise NotImplementedError('.select_renderer() must be implemented')
+        raise NotImplementedError(".select_renderer() must be implemented")
 
 
 class DefaultContentNegotiation(BaseContentNegotiation):
@@ -57,15 +58,15 @@ class DefaultContentNegotiation(BaseContentNegotiation):
                         # Return the most specific media type as accepted.
                         media_type_wrapper = _MediaType(media_type)
                         if (
-                            _MediaType(renderer.media_type).precedence >
-                            media_type_wrapper.precedence
+                            _MediaType(renderer.media_type).precedence
+                            > media_type_wrapper.precedence
                         ):
                             # Eg client requests '*/*'
                             # Accepted media type is 'application/json'
-                            full_media_type = ';'.join(
-                                (renderer.media_type,) +
-                                tuple(
-                                    '{}={}'.format(key, value)
+                            full_media_type = ";".join(
+                                (renderer.media_type,)
+                                + tuple(
+                                    "{}={}".format(key, value)
                                     for key, value in media_type_wrapper.params.items()
                                 )
                             )
@@ -82,8 +83,7 @@ class DefaultContentNegotiation(BaseContentNegotiation):
         If there is a '.json' style format suffix, filter the renderers
         so that we only negotiation against those that accept that format.
         """
-        renderers = [renderer for renderer in renderers
-                     if renderer.format == format]
+        renderers = [renderer for renderer in renderers if renderer.format == format]
         if not renderers:
             raise Http404
         return renderers
@@ -93,5 +93,5 @@ class DefaultContentNegotiation(BaseContentNegotiation):
         Given the incoming request, return a tokenized list of media
         type strings.
         """
-        header = request.META.get('HTTP_ACCEPT', '*/*')
-        return [token.strip() for token in header.split(',')]
+        header = request.META.get("HTTP_ACCEPT", "*/*")
+        return [token.strip() for token in header.split(",")]

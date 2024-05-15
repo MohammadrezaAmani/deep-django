@@ -1,13 +1,10 @@
-from requests.auth import HTTPBasicAuth
 from urllib.parse import parse_qsl
 
-from django.utils.http import urlencode
+from requests.auth import HTTPBasicAuth
 
 from allauth.socialaccount.adapter import get_adapter
-from allauth.socialaccount.providers.oauth2.client import (
-    OAuth2Client,
-    OAuth2Error,
-)
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client, OAuth2Error
+from django.utils.http import urlencode
 
 
 class NotionOAuth2Client(OAuth2Client):

@@ -1,8 +1,5 @@
 import re
 
-from django.conf import settings
-from django.http import HttpResponse, HttpResponseBadRequest
-
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.providers.oauth2.views import (
@@ -10,6 +7,8 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2CallbackView,
     OAuth2LoginView,
 )
+from django.conf import settings
+from django.http import HttpResponse, HttpResponseBadRequest
 
 
 class ShopifyOAuth2Adapter(OAuth2Adapter):

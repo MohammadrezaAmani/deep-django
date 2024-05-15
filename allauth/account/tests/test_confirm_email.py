@@ -1,13 +1,6 @@
 from datetime import timedelta
 from unittest.mock import Mock, patch
 
-from django.conf import settings
-from django.contrib.auth import SESSION_KEY, get_user_model
-from django.core.cache import cache
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.utils.timezone import now
-
 import pytest
 from pytest_django.asserts import (
     assertRedirects,
@@ -23,6 +16,12 @@ from allauth.account.models import (
 )
 from allauth.account.signals import user_logged_in
 from allauth.account.utils import user_pk_to_url_str
+from django.conf import settings
+from django.contrib.auth import SESSION_KEY, get_user_model
+from django.core.cache import cache
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.utils.timezone import now
 
 from .test_models import UUIDUser
 

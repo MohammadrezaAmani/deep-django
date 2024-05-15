@@ -8,7 +8,6 @@ object creation, and makes it possible to switch between using the implicit
 """
 from django.db import DataError
 from django.utils.translation import gettext_lazy as _
-
 from rest_framework.exceptions import ValidationError
 from rest_framework.utils.representation import smart_repr
 
@@ -36,10 +35,11 @@ class UniqueValidator:
 
     Should be applied to an individual field on the serializer.
     """
-    message = _('This field must be unique.')
+
+    message = _("This field must be unique.")
     requires_context = True
 
-    def __init__(self, queryset, message=None, lookup='exact'):
+    def __init__(self, queryset, message=None, lookup="exact"):
         self.queryset = queryset
         self.message = message or self.message
         self.lookup = lookup
@@ -48,7 +48,7 @@ class UniqueValidator:
         """
         Filter the queryset to all instances matching the given attribute.
         """
-        filter_kwargs = {'%s__%s' % (field_name, self.lookup): value}
+        filter_kwargs = {"%s__%s" % (field_name, self.lookup): value}
         return qs_filter(queryset, **filter_kwargs)
 
     def exclude_current_instance(self, queryset, instance):
@@ -65,28 +65,29 @@ class UniqueValidator:
         # same as the serializer field name if `source=<>` is set.
         field_name = serializer_field.source_attrs[-1]
         # Determine the existing instance, if this is an update operation.
-        instance = getattr(serializer_field.parent, 'instance', None)
+        instance = getattr(serializer_field.parent, "instance", None)
 
         queryset = self.queryset
         queryset = self.filter_queryset(value, queryset, field_name)
         queryset = self.exclude_current_instance(queryset, instance)
         if qs_exists(queryset):
-            raise ValidationError(self.message, code='unique')
+            raise ValidationError(self.message, code="unique")
 
     def __repr__(self):
-        return '<%s(queryset=%s)>' % (
+        return "<%s(queryset=%s)>" % (
             self.__class__.__name__,
-            smart_repr(self.queryset)
+            smart_repr(self.queryset),
         )
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
-        return (self.message == other.message
-                and self.requires_context == other.requires_context
-                and self.queryset == other.queryset
-                and self.lookup == other.lookup
-                )
+        return (
+            self.message == other.message
+            and self.requires_context == other.requires_context
+            and self.queryset == other.queryset
+            and self.lookup == other.lookup
+        )
 
 
 class UniqueTogetherValidator:
@@ -95,8 +96,9 @@ class UniqueTogetherValidator:
 
     Should be applied to the serializer class, not to an individual field.
     """
-    message = _('The fields {field_names} must make a unique set.')
-    missing_message = _('This field is required.')
+
+    message = _("The fields {field_names} must make a unique set.")
+    missing_message = _("This field is required.")
     requires_context = True
 
     def __init__(self, queryset, fields, message=None):
@@ -118,17 +120,14 @@ class UniqueTogetherValidator:
             if serializer.fields[field_name].source not in attrs
         }
         if missing_items:
-            raise ValidationError(missing_items, code='required')
+            raise ValidationError(missing_items, code="required")
 
     def filter_queryset(self, attrs, queryset, serializer):
         """
         Filter the queryset to all instances matching the given attributes.
         """
         # field names => field sources
-        sources = [
-            serializer.fields[field_name].source
-            for field_name in self.fields
-        ]
+        sources = [serializer.fields[field_name].source for field_name in self.fields]
 
         # If this is an update, then any unprovided field should
         # have it's value set based on the existing instance attribute.
@@ -138,10 +137,7 @@ class UniqueTogetherValidator:
                     attrs[source] = getattr(serializer.instance, source)
 
         # Determine the filter keyword arguments and filter the queryset.
-        filter_kwargs = {
-            source: attrs[source]
-            for source in sources
-        }
+        filter_kwargs = {source: attrs[source] for source in sources}
         return qs_filter(queryset, **filter_kwargs)
 
     def exclude_current_instance(self, attrs, queryset, instance):
@@ -173,49 +169,49 @@ class UniqueTogetherValidator:
             ]
 
         if checked_values and None not in checked_values and qs_exists(queryset):
-            field_names = ', '.join(self.fields)
+            field_names = ", ".join(self.fields)
             message = self.message.format(field_names=field_names)
-            raise ValidationError(message, code='unique')
+            raise ValidationError(message, code="unique")
 
     def __repr__(self):
-        return '<%s(queryset=%s, fields=%s)>' % (
+        return "<%s(queryset=%s, fields=%s)>" % (
             self.__class__.__name__,
             smart_repr(self.queryset),
-            smart_repr(self.fields)
+            smart_repr(self.fields),
         )
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
-        return (self.message == other.message
-                and self.requires_context == other.requires_context
-                and self.missing_message == other.missing_message
-                and self.queryset == other.queryset
-                and self.fields == other.fields
-                )
+        return (
+            self.message == other.message
+            and self.requires_context == other.requires_context
+            and self.missing_message == other.missing_message
+            and self.queryset == other.queryset
+            and self.fields == other.fields
+        )
 
 
 class ProhibitSurrogateCharactersValidator:
-    message = _('Surrogate characters are not allowed: U+{code_point:X}.')
-    code = 'surrogate_characters_not_allowed'
+    message = _("Surrogate characters are not allowed: U+{code_point:X}.")
+    code = "surrogate_characters_not_allowed"
 
     def __call__(self, value):
-        for surrogate_character in (ch for ch in str(value)
-                                    if 0xD800 <= ord(ch) <= 0xDFFF):
+        for surrogate_character in (
+            ch for ch in str(value) if 0xD800 <= ord(ch) <= 0xDFFF
+        ):
             message = self.message.format(code_point=ord(surrogate_character))
             raise ValidationError(message, code=self.code)
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
-        return (self.message == other.message
-                and self.code == other.code
-                )
+        return self.message == other.message and self.code == other.code
 
 
 class BaseUniqueForValidator:
     message = None
-    missing_message = _('This field is required.')
+    missing_message = _("This field is required.")
     requires_context = True
 
     def __init__(self, queryset, field, date_field, message=None):
@@ -235,10 +231,10 @@ class BaseUniqueForValidator:
             if field_name not in attrs
         }
         if missing_items:
-            raise ValidationError(missing_items, code='required')
+            raise ValidationError(missing_items, code="required")
 
     def filter_queryset(self, attrs, queryset, field_name, date_field_name):
-        raise NotImplementedError('`filter_queryset` must be implemented.')
+        raise NotImplementedError("`filter_queryset` must be implemented.")
 
     def exclude_current_instance(self, attrs, queryset, instance):
         """
@@ -261,27 +257,26 @@ class BaseUniqueForValidator:
         queryset = self.exclude_current_instance(attrs, queryset, serializer.instance)
         if qs_exists(queryset):
             message = self.message.format(date_field=self.date_field)
-            raise ValidationError({
-                self.field: message
-            }, code='unique')
+            raise ValidationError({self.field: message}, code="unique")
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
-        return (self.message == other.message
-                and self.missing_message == other.missing_message
-                and self.requires_context == other.requires_context
-                and self.queryset == other.queryset
-                and self.field == other.field
-                and self.date_field == other.date_field
-                )
+        return (
+            self.message == other.message
+            and self.missing_message == other.missing_message
+            and self.requires_context == other.requires_context
+            and self.queryset == other.queryset
+            and self.field == other.field
+            and self.date_field == other.date_field
+        )
 
     def __repr__(self):
-        return '<%s(queryset=%s, field=%s, date_field=%s)>' % (
+        return "<%s(queryset=%s, field=%s, date_field=%s)>" % (
             self.__class__.__name__,
             smart_repr(self.queryset),
             smart_repr(self.field),
-            smart_repr(self.date_field)
+            smart_repr(self.date_field),
         )
 
 
@@ -294,9 +289,9 @@ class UniqueForDateValidator(BaseUniqueForValidator):
 
         filter_kwargs = {}
         filter_kwargs[field_name] = value
-        filter_kwargs['%s__day' % date_field_name] = date.day
-        filter_kwargs['%s__month' % date_field_name] = date.month
-        filter_kwargs['%s__year' % date_field_name] = date.year
+        filter_kwargs["%s__day" % date_field_name] = date.day
+        filter_kwargs["%s__month" % date_field_name] = date.month
+        filter_kwargs["%s__year" % date_field_name] = date.year
         return qs_filter(queryset, **filter_kwargs)
 
 
@@ -309,7 +304,7 @@ class UniqueForMonthValidator(BaseUniqueForValidator):
 
         filter_kwargs = {}
         filter_kwargs[field_name] = value
-        filter_kwargs['%s__month' % date_field_name] = date.month
+        filter_kwargs["%s__month" % date_field_name] = date.month
         return qs_filter(queryset, **filter_kwargs)
 
 
@@ -322,5 +317,5 @@ class UniqueForYearValidator(BaseUniqueForValidator):
 
         filter_kwargs = {}
         filter_kwargs[field_name] = value
-        filter_kwargs['%s__year' % date_field_name] = date.year
+        filter_kwargs["%s__year" % date_field_name] = date.year
         return qs_filter(queryset, **filter_kwargs)

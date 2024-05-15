@@ -1,12 +1,6 @@
 import copy
 from unittest.mock import ANY, patch
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser
-from django.contrib.messages.middleware import MessageMiddleware
-from django.contrib.sessions.middleware import SessionMiddleware
-from django.urls import reverse
-
 import pytest
 from pytest_django.asserts import assertTemplateUsed
 
@@ -15,6 +9,11 @@ from allauth.core import context
 from allauth.socialaccount.helpers import complete_social_login
 from allauth.socialaccount.models import SocialAccount, SocialToken
 from allauth.socialaccount.providers.base import AuthProcess
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.messages.middleware import MessageMiddleware
+from django.contrib.sessions.middleware import SessionMiddleware
+from django.urls import reverse
 
 
 @pytest.mark.parametrize("with_emailaddress", [False, True])

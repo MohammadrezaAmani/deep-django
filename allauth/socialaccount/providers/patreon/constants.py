@@ -1,6 +1,5 @@
 from django.conf import settings
 
-
 PROVIDER_ID = "patreon"
 API_VERSION = (
     getattr(settings, "SOCIALACCOUNT_PROVIDERS", {})

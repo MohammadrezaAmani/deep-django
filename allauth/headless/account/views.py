@@ -1,5 +1,3 @@
-from django.utils.decorators import method_decorator
-
 from allauth.account.adapter import get_adapter as get_account_adapter
 from allauth.account.internal import flows
 from allauth.account.internal.flows import password_change, password_reset
@@ -29,6 +27,7 @@ from allauth.headless.account.inputs import (
 from allauth.headless.base.response import APIResponse, AuthenticationResponse
 from allauth.headless.base.views import APIView, AuthenticatedAPIView
 from allauth.headless.internal.restkit.response import ErrorResponse
+from django.utils.decorators import method_decorator
 
 
 class RequestLoginCodeView(APIView):

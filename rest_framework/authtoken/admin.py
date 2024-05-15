@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
 from rest_framework.authtoken.models import Token, TokenProxy
 
 User = get_user_model()
@@ -13,20 +12,22 @@ User = get_user_model()
 
 class TokenChangeList(ChangeList):
     """Map to matching User id"""
+
     def url_for_result(self, result):
         pk = result.user.pk
-        return reverse('admin:%s_%s_change' % (self.opts.app_label,
-                                               self.opts.model_name),
-                       args=(quote(pk),),
-                       current_app=self.model_admin.admin_site.name)
+        return reverse(
+            "admin:%s_%s_change" % (self.opts.app_label, self.opts.model_name),
+            args=(quote(pk),),
+            current_app=self.model_admin.admin_site.name,
+        )
 
 
 class TokenAdmin(admin.ModelAdmin):
-    list_display = ('key', 'user', 'created')
-    fields = ('user',)
-    search_fields = ('user__username',)
-    search_help_text = _('Username')
-    ordering = ('-created',)
+    list_display = ("key", "user", "created")
+    fields = ("user",)
+    search_fields = ("user__username",)
+    search_help_text = _("Username")
+    ordering = ("-created",)
     actions = None  # Actions not compatible with mapped IDs.
 
     def get_changelist(self, request, **kwargs):
@@ -42,7 +43,12 @@ class TokenAdmin(admin.ModelAdmin):
             object_id = field.to_python(object_id)
             user = User.objects.get(**{field.name: object_id})
             return queryset.get(user=user)
-        except (queryset.model.DoesNotExist, User.DoesNotExist, ValidationError, ValueError):
+        except (
+            queryset.model.DoesNotExist,
+            User.DoesNotExist,
+            ValidationError,
+            ValueError,
+        ):
             return None
 
     def delete_model(self, request, obj):

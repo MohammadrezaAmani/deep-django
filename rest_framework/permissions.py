@@ -2,10 +2,9 @@
 Provides a set of pluggable permission policies.
 """
 from django.http import Http404
-
 from rest_framework import exceptions
 
-SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
+SAFE_METHODS = ("GET", "HEAD", "OPTIONS")
 
 
 class OperationHolderMixin:
@@ -48,10 +47,10 @@ class OperandHolder(OperationHolderMixin):
 
     def __eq__(self, other):
         return (
-            isinstance(other, OperandHolder) and
-            self.operator_class == other.operator_class and
-            self.op1_class == other.op1_class and
-            self.op2_class == other.op2_class
+            isinstance(other, OperandHolder)
+            and self.operator_class == other.operator_class
+            and self.op1_class == other.op1_class
+            and self.op2_class == other.op2_class
         )
 
 
@@ -61,16 +60,14 @@ class AND:
         self.op2 = op2
 
     def has_permission(self, request, view):
-        return (
-            self.op1.has_permission(request, view) and
-            self.op2.has_permission(request, view)
+        return self.op1.has_permission(request, view) and self.op2.has_permission(
+            request, view
         )
 
     def has_object_permission(self, request, view, obj):
-        return (
-            self.op1.has_object_permission(request, view, obj) and
-            self.op2.has_object_permission(request, view, obj)
-        )
+        return self.op1.has_object_permission(
+            request, view, obj
+        ) and self.op2.has_object_permission(request, view, obj)
 
 
 class OR:
@@ -79,9 +76,8 @@ class OR:
         self.op2 = op2
 
     def has_permission(self, request, view):
-        return (
-            self.op1.has_permission(request, view) or
-            self.op2.has_permission(request, view)
+        return self.op1.has_permission(request, view) or self.op2.has_permission(
+            request, view
         )
 
     def has_object_permission(self, request, view, obj):
@@ -164,9 +160,9 @@ class IsAuthenticatedOrReadOnly(BasePermission):
 
     def has_permission(self, request, view):
         return bool(
-            request.method in SAFE_METHODS or
-            request.user and
-            request.user.is_authenticated
+            request.method in SAFE_METHODS
+            or request.user
+            and request.user.is_authenticated
         )
 
 
@@ -186,13 +182,13 @@ class DjangoModelPermissions(BasePermission):
     # Override this if you need to also provide 'view' permissions,
     # or if you want to provide custom permission codes.
     perms_map = {
-        'GET': [],
-        'OPTIONS': [],
-        'HEAD': [],
-        'POST': ['%(app_label)s.add_%(model_name)s'],
-        'PUT': ['%(app_label)s.change_%(model_name)s'],
-        'PATCH': ['%(app_label)s.change_%(model_name)s'],
-        'DELETE': ['%(app_label)s.delete_%(model_name)s'],
+        "GET": [],
+        "OPTIONS": [],
+        "HEAD": [],
+        "POST": ["%(app_label)s.add_%(model_name)s"],
+        "PUT": ["%(app_label)s.change_%(model_name)s"],
+        "PATCH": ["%(app_label)s.change_%(model_name)s"],
+        "DELETE": ["%(app_label)s.delete_%(model_name)s"],
     }
 
     authenticated_users_only = True
@@ -203,8 +199,8 @@ class DjangoModelPermissions(BasePermission):
         codes that the user is required to have.
         """
         kwargs = {
-            'app_label': model_cls._meta.app_label,
-            'model_name': model_cls._meta.model_name
+            "app_label": model_cls._meta.app_label,
+            "model_name": model_cls._meta.model_name,
         }
 
         if method not in self.perms_map:
@@ -213,28 +209,32 @@ class DjangoModelPermissions(BasePermission):
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def _queryset(self, view):
-        assert hasattr(view, 'get_queryset') \
-            or getattr(view, 'queryset', None) is not None, (
-            'Cannot apply {} on a view that does not set '
-            '`.queryset` or have a `.get_queryset()` method.'
-        ).format(self.__class__.__name__)
+        assert (
+            hasattr(view, "get_queryset") or getattr(view, "queryset", None) is not None
+        ), (
+            "Cannot apply {} on a view that does not set "
+            "`.queryset` or have a `.get_queryset()` method."
+        ).format(
+            self.__class__.__name__
+        )
 
-        if hasattr(view, 'get_queryset'):
+        if hasattr(view, "get_queryset"):
             queryset = view.get_queryset()
-            assert queryset is not None, (
-                '{}.get_queryset() returned None'.format(view.__class__.__name__)
+            assert queryset is not None, "{}.get_queryset() returned None".format(
+                view.__class__.__name__
             )
             return queryset
         return view.queryset
 
     def has_permission(self, request, view):
         if not request.user or (
-           not request.user.is_authenticated and self.authenticated_users_only):
+            not request.user.is_authenticated and self.authenticated_users_only
+        ):
             return False
 
         # Workaround to ensure DjangoModelPermissions are not applied
         # to the root view when using DefaultRouter.
-        if getattr(view, '_ignore_model_permissions', False):
+        if getattr(view, "_ignore_model_permissions", False):
             return True
 
         queryset = self._queryset(view)
@@ -248,6 +248,7 @@ class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
     Similar to DjangoModelPermissions, except that anonymous users are
     allowed read-only access.
     """
+
     authenticated_users_only = False
 
 
@@ -262,20 +263,21 @@ class DjangoObjectPermissions(DjangoModelPermissions):
     This permission can only be applied against view classes that
     provide a `.queryset` attribute.
     """
+
     perms_map = {
-        'GET': [],
-        'OPTIONS': [],
-        'HEAD': [],
-        'POST': ['%(app_label)s.add_%(model_name)s'],
-        'PUT': ['%(app_label)s.change_%(model_name)s'],
-        'PATCH': ['%(app_label)s.change_%(model_name)s'],
-        'DELETE': ['%(app_label)s.delete_%(model_name)s'],
+        "GET": [],
+        "OPTIONS": [],
+        "HEAD": [],
+        "POST": ["%(app_label)s.add_%(model_name)s"],
+        "PUT": ["%(app_label)s.change_%(model_name)s"],
+        "PATCH": ["%(app_label)s.change_%(model_name)s"],
+        "DELETE": ["%(app_label)s.delete_%(model_name)s"],
     }
 
     def get_required_object_permissions(self, method, model_cls):
         kwargs = {
-            'app_label': model_cls._meta.app_label,
-            'model_name': model_cls._meta.model_name
+            "app_label": model_cls._meta.app_label,
+            "model_name": model_cls._meta.model_name,
         }
 
         if method not in self.perms_map:
@@ -301,7 +303,7 @@ class DjangoObjectPermissions(DjangoModelPermissions):
                 # to make another lookup.
                 raise Http404
 
-            read_perms = self.get_required_object_permissions('GET', model_cls)
+            read_perms = self.get_required_object_permissions("GET", model_cls)
             if not user.has_perms(read_perms, obj):
                 raise Http404
 

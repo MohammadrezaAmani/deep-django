@@ -1,10 +1,8 @@
-from django.urls import path, re_path
-
 from allauth import app_settings as allauth_app_settings
 from allauth.account import app_settings
+from django.urls import path, re_path
 
 from . import views
-
 
 urlpatterns = [
     path("login/", views.login, name="account_login"),

@@ -1,6 +1,6 @@
-from django.urls import reverse, reverse_lazy
-
 import pytest
+
+from django.urls import reverse, reverse_lazy
 
 
 def test_change_unusable_password_redirects_to_set(client, user, user_password):

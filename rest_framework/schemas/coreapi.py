@@ -4,7 +4,6 @@ from urllib import parse
 
 from django.db import models
 from django.utils.encoding import force_str
-
 from rest_framework import RemovedInDRF317Warning, exceptions, serializers
 from rest_framework.compat import coreapi, coreschema, uritemplate
 from rest_framework.settings import api_settings
@@ -15,7 +14,7 @@ from .utils import get_pk_description, is_list_view
 
 
 def common_path(paths):
-    split_paths = [path.strip('/').split('/') for path in paths]
+    split_paths = [path.strip("/").split("/") for path in paths]
     s1 = min(split_paths)
     s2 = max(split_paths)
     common = s1
@@ -23,12 +22,17 @@ def common_path(paths):
         if c != s2[i]:
             common = s1[:i]
             break
-    return '/' + '/'.join(common)
+    return "/" + "/".join(common)
 
 
 def is_custom_action(action):
     return action not in {
-        'retrieve', 'list', 'create', 'update', 'partial_update', 'destroy'
+        "retrieve",
+        "list",
+        "create",
+        "update",
+        "partial_update",
+        "destroy",
     }
 
 
@@ -68,7 +72,7 @@ class LinkNode(dict):
             current_val = self.methods_counter[preferred_key]
             self.methods_counter[preferred_key] += 1
 
-            key = '{}_{}'.format(preferred_key, current_val)
+            key = "{}_{}".format(preferred_key, current_val)
             if key not in self:
                 return key
 
@@ -91,9 +95,7 @@ def insert_into(target, keys, value):
         target.links.append((keys[-1], value))
     except TypeError:
         msg = INSERT_INTO_COLLISION_FMT.format(
-            value_url=value.url,
-            target_url=target.url,
-            keys=keys
+            value_url=value.url, target_url=target.url, keys=keys
         )
         raise ValueError(msg)
 
@@ -102,13 +104,14 @@ class SchemaGenerator(BaseSchemaGenerator):
     """
     Original CoreAPI version.
     """
+
     # Map HTTP methods onto actions.
     default_mapping = {
-        'get': 'retrieve',
-        'post': 'create',
-        'put': 'update',
-        'patch': 'partial_update',
-        'delete': 'destroy',
+        "get": "retrieve",
+        "post": "create",
+        "put": "update",
+        "patch": "partial_update",
+        "delete": "destroy",
     }
 
     # Map the method names we use for viewset actions onto external schema names.
@@ -116,11 +119,22 @@ class SchemaGenerator(BaseSchemaGenerator):
     # Set by 'SCHEMA_COERCE_METHOD_NAMES'.
     coerce_method_names = None
 
-    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None, version=None):
-        assert coreapi, '`coreapi` must be installed for schema support.'
+    def __init__(
+        self,
+        title=None,
+        url=None,
+        description=None,
+        patterns=None,
+        urlconf=None,
+        version=None,
+    ):
+        assert coreapi, "`coreapi` must be installed for schema support."
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
-        assert coreschema, '`coreschema` must be installed for schema support.'
+            warnings.warn(
+                "CoreAPI compatibility is deprecated and will be removed in DRF 3.17",
+                RemovedInDRF317Warning,
+            )
+        assert coreschema, "`coreschema` must be installed for schema support."
 
         super().__init__(title, url, description, patterns, urlconf)
         self.coerce_method_names = api_settings.SCHEMA_COERCE_METHOD_NAMES
@@ -143,7 +157,7 @@ class SchemaGenerator(BaseSchemaGenerator):
             if not self.has_view_permissions(path, method, view):
                 continue
             link = view.schema.get_link(path, method, base_url=self.url)
-            subpath = path[len(prefix):]
+            subpath = path[len(prefix) :]
             keys = self.get_keys(subpath, method, view)
             insert_into(links, keys, link)
 
@@ -165,8 +179,7 @@ class SchemaGenerator(BaseSchemaGenerator):
 
         distribute_links(links)
         return coreapi.Document(
-            title=self.title, description=self.description,
-            url=url, content=links
+            title=self.title, description=self.description, url=url, content=links
         )
 
     # Method for generating the link layout....
@@ -182,27 +195,29 @@ class SchemaGenerator(BaseSchemaGenerator):
         /users/{pk}/groups/       ("users", "groups", "list"), ("users", "groups", "create")
         /users/{pk}/groups/{pk}/  ("users", "groups", "read"), ("users", "groups", "update"), ("users", "groups", "delete")
         """
-        if hasattr(view, 'action'):
+        if hasattr(view, "action"):
             # Viewsets have explicitly named actions.
             action = view.action
         else:
             # Views have no associated action, so we determine one from the method.
             if is_list_view(subpath, method, view):
-                action = 'list'
+                action = "list"
             else:
                 action = self.default_mapping[method.lower()]
 
         named_path_components = [
-            component for component
-            in subpath.strip('/').split('/')
-            if '{' not in component
+            component
+            for component in subpath.strip("/").split("/")
+            if "{" not in component
         ]
 
         if is_custom_action(action):
             # Custom action, eg "/users/{pk}/activate/", "/users/active/"
             mapped_methods = {
                 # Don't count head mapping, e.g. not part of the schema
-                method for method in view.action_map if method != 'head'
+                method
+                for method in view.action_map
+                if method != "head"
             }
             if len(mapped_methods) > 1:
                 action = self.default_mapping[method.lower()]
@@ -235,60 +250,52 @@ class SchemaGenerator(BaseSchemaGenerator):
         """
         prefixes = []
         for path in paths:
-            components = path.strip('/').split('/')
+            components = path.strip("/").split("/")
             initial_components = []
             for component in components:
-                if '{' in component:
+                if "{" in component:
                     break
                 initial_components.append(component)
-            prefix = '/'.join(initial_components[:-1])
+            prefix = "/".join(initial_components[:-1])
             if not prefix:
                 # We can just break early in the case that there's at least
                 # one URL that doesn't have a path prefix.
-                return '/'
-            prefixes.append('/' + prefix + '/')
+                return "/"
+            prefixes.append("/" + prefix + "/")
         return common_path(prefixes)
+
 
 # View Inspectors #
 
 
 def field_to_schema(field):
-    title = force_str(field.label) if field.label else ''
-    description = force_str(field.help_text) if field.help_text else ''
+    title = force_str(field.label) if field.label else ""
+    description = force_str(field.help_text) if field.help_text else ""
 
     if isinstance(field, (serializers.ListSerializer, serializers.ListField)):
         child_schema = field_to_schema(field.child)
         return coreschema.Array(
-            items=child_schema,
-            title=title,
-            description=description
+            items=child_schema, title=title, description=description
         )
     elif isinstance(field, serializers.DictField):
-        return coreschema.Object(
-            title=title,
-            description=description
-        )
+        return coreschema.Object(title=title, description=description)
     elif isinstance(field, serializers.Serializer):
         return coreschema.Object(
             properties={
-                key: field_to_schema(value)
-                for key, value
-                in field.fields.items()
+                key: field_to_schema(value) for key, value in field.fields.items()
             },
             title=title,
-            description=description
+            description=description,
         )
     elif isinstance(field, serializers.ManyRelatedField):
         related_field_schema = field_to_schema(field.child_relation)
 
         return coreschema.Array(
-            items=related_field_schema,
-            title=title,
-            description=description
+            items=related_field_schema, title=title, description=description
         )
     elif isinstance(field, serializers.PrimaryKeyRelatedField):
         schema_cls = coreschema.String
-        model = getattr(field.queryset, 'model', None)
+        model = getattr(field.queryset, "model", None)
         if model is not None:
             model_field = model._meta.pk
             if isinstance(model_field, models.AutoField):
@@ -300,13 +307,11 @@ def field_to_schema(field):
         return coreschema.Array(
             items=coreschema.Enum(enum=list(field.choices)),
             title=title,
-            description=description
+            description=description,
         )
     elif isinstance(field, serializers.ChoiceField):
         return coreschema.Enum(
-            enum=list(field.choices),
-            title=title,
-            description=description
+            enum=list(field.choices), title=title, description=description
         )
     elif isinstance(field, serializers.BooleanField):
         return coreschema.Boolean(title=title, description=description)
@@ -315,25 +320,17 @@ def field_to_schema(field):
     elif isinstance(field, serializers.IntegerField):
         return coreschema.Integer(title=title, description=description)
     elif isinstance(field, serializers.DateField):
-        return coreschema.String(
-            title=title,
-            description=description,
-            format='date'
-        )
+        return coreschema.String(title=title, description=description, format="date")
     elif isinstance(field, serializers.DateTimeField):
         return coreschema.String(
-            title=title,
-            description=description,
-            format='date-time'
+            title=title, description=description, format="date-time"
         )
     elif isinstance(field, serializers.JSONField):
         return coreschema.Object(title=title, description=description)
 
-    if field.style.get('base_template') == 'textarea.html':
+    if field.style.get("base_template") == "textarea.html":
         return coreschema.String(
-            title=title,
-            description=description,
-            format='textarea'
+            title=title, description=description, format="textarea"
         )
 
     return coreschema.String(title=title, description=description)
@@ -345,6 +342,7 @@ class AutoSchema(ViewInspector):
 
     Responsible for per-view introspection and schema generation.
     """
+
     def __init__(self, manual_fields=None):
         """
         Parameters:
@@ -354,7 +352,10 @@ class AutoSchema(ViewInspector):
         """
         super().__init__()
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
+            warnings.warn(
+                "CoreAPI compatibility is deprecated and will be removed in DRF 3.17",
+                RemovedInDRF317Warning,
+            )
 
         if manual_fields is None:
             manual_fields = []
@@ -380,14 +381,14 @@ class AutoSchema(ViewInspector):
         manual_fields = self.get_manual_fields(path, method)
         fields = self.update_fields(fields, manual_fields)
 
-        if fields and any([field.location in ('form', 'body') for field in fields]):
+        if fields and any([field.location in ("form", "body") for field in fields]):
             encoding = self.get_encoding(path, method)
         else:
             encoding = None
 
         description = self.get_description(path, method)
 
-        if base_url and path.startswith('/'):
+        if base_url and path.startswith("/"):
             path = path[1:]
 
         return coreapi.Link(
@@ -395,7 +396,7 @@ class AutoSchema(ViewInspector):
             action=method.lower(),
             encoding=encoding,
             fields=fields,
-            description=description
+            description=description,
         )
 
     def get_path_fields(self, path, method):
@@ -404,12 +405,12 @@ class AutoSchema(ViewInspector):
         templated path variables.
         """
         view = self.view
-        model = getattr(getattr(view, 'queryset', None), 'model', None)
+        model = getattr(getattr(view, "queryset", None), "model", None)
         fields = []
 
         for variable in uritemplate.variables(path):
-            title = ''
-            description = ''
+            title = ""
+            description = ""
             schema_cls = coreschema.String
             kwargs = {}
             if model is not None:
@@ -427,16 +428,19 @@ class AutoSchema(ViewInspector):
                 elif model_field is not None and model_field.primary_key:
                     description = get_pk_description(model, model_field)
 
-                if hasattr(view, 'lookup_value_regex') and view.lookup_field == variable:
-                    kwargs['pattern'] = view.lookup_value_regex
+                if (
+                    hasattr(view, "lookup_value_regex")
+                    and view.lookup_field == variable
+                ):
+                    kwargs["pattern"] = view.lookup_value_regex
                 elif isinstance(model_field, models.AutoField):
                     schema_cls = coreschema.Integer
 
             field = coreapi.Field(
                 name=variable,
-                location='path',
+                location="path",
                 required=True,
-                schema=schema_cls(title=title, description=description, **kwargs)
+                schema=schema_cls(title=title, description=description, **kwargs),
             )
             fields.append(field)
 
@@ -449,28 +453,29 @@ class AutoSchema(ViewInspector):
         """
         view = self.view
 
-        if method not in ('PUT', 'PATCH', 'POST'):
+        if method not in ("PUT", "PATCH", "POST"):
             return []
 
-        if not hasattr(view, 'get_serializer'):
+        if not hasattr(view, "get_serializer"):
             return []
 
         try:
             serializer = view.get_serializer()
         except exceptions.APIException:
             serializer = None
-            warnings.warn('{}.get_serializer() raised an exception during '
-                          'schema generation. Serializer fields will not be '
-                          'generated for {} {}.'
-                          .format(view.__class__.__name__, method, path))
+            warnings.warn(
+                "{}.get_serializer() raised an exception during "
+                "schema generation. Serializer fields will not be "
+                "generated for {} {}.".format(view.__class__.__name__, method, path)
+            )
 
         if isinstance(serializer, serializers.ListSerializer):
             return [
                 coreapi.Field(
-                    name='data',
-                    location='body',
+                    name="data",
+                    location="body",
                     required=True,
-                    schema=coreschema.Array()
+                    schema=coreschema.Array(),
                 )
             ]
 
@@ -482,12 +487,12 @@ class AutoSchema(ViewInspector):
             if field.read_only or isinstance(field, serializers.HiddenField):
                 continue
 
-            required = field.required and method != 'PATCH'
+            required = field.required and method != "PATCH"
             field = coreapi.Field(
                 name=field.field_name,
-                location='form',
+                location="form",
                 required=required,
-                schema=field_to_schema(field)
+                schema=field_to_schema(field),
             )
             fields.append(field)
 
@@ -499,7 +504,7 @@ class AutoSchema(ViewInspector):
         if not is_list_view(path, method, view):
             return []
 
-        pagination = getattr(view, 'pagination_class', None)
+        pagination = getattr(view, "pagination_class", None)
         if not pagination:
             return []
 
@@ -518,11 +523,17 @@ class AutoSchema(ViewInspector):
         Note: Introduced in v3.7: Initially "private" (i.e. with leading underscore)
             to allow changes based on user experience.
         """
-        if getattr(self.view, 'filter_backends', None) is None:
+        if getattr(self.view, "filter_backends", None) is None:
             return False
 
-        if hasattr(self.view, 'action'):
-            return self.view.action in ["list", "retrieve", "update", "partial_update", "destroy"]
+        if hasattr(self.view, "action"):
+            return self.view.action in [
+                "list",
+                "retrieve",
+                "update",
+                "partial_update",
+                "destroy",
+            ]
 
         return method.lower() in ["get", "put", "patch", "delete"]
 
@@ -568,18 +579,18 @@ class AutoSchema(ViewInspector):
 
         # Core API supports the following request encodings over HTTP...
         supported_media_types = {
-            'application/json',
-            'application/x-www-form-urlencoded',
-            'multipart/form-data',
+            "application/json",
+            "application/x-www-form-urlencoded",
+            "multipart/form-data",
         }
-        parser_classes = getattr(view, 'parser_classes', [])
+        parser_classes = getattr(view, "parser_classes", [])
         for parser_class in parser_classes:
-            media_type = getattr(parser_class, 'media_type', None)
+            media_type = getattr(parser_class, "media_type", None)
             if media_type in supported_media_types:
                 return media_type
             # Raw binary uploads are supported with "application/octet-stream"
-            if media_type == '*/*':
-                return 'application/octet-stream'
+            if media_type == "*/*":
+                return "application/octet-stream"
 
         return None
 
@@ -589,7 +600,8 @@ class ManualSchema(ViewInspector):
     Allows providing a list of coreapi.Fields,
     plus an optional description.
     """
-    def __init__(self, fields, description='', encoding=None):
+
+    def __init__(self, fields, description="", encoding=None):
         """
         Parameters:
 
@@ -598,16 +610,20 @@ class ManualSchema(ViewInspector):
         """
         super().__init__()
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
+            warnings.warn(
+                "CoreAPI compatibility is deprecated and will be removed in DRF 3.17",
+                RemovedInDRF317Warning,
+            )
 
-        assert all(isinstance(f, coreapi.Field) for f in fields), "`fields` must be a list of coreapi.Field instances"
+        assert all(
+            isinstance(f, coreapi.Field) for f in fields
+        ), "`fields` must be a list of coreapi.Field instances"
         self._fields = fields
         self._description = description
         self._encoding = encoding
 
     def get_link(self, path, method, base_url):
-
-        if base_url and path.startswith('/'):
+        if base_url and path.startswith("/"):
             path = path[1:]
 
         return coreapi.Link(
@@ -615,12 +631,15 @@ class ManualSchema(ViewInspector):
             action=method.lower(),
             encoding=self._encoding,
             fields=self._fields,
-            description=self._description
+            description=self._description,
         )
 
 
 def is_enabled():
     """Is CoreAPI Mode enabled?"""
     if coreapi is not None:
-        warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
+        warnings.warn(
+            "CoreAPI compatibility is deprecated and will be removed in DRF 3.17",
+            RemovedInDRF317Warning,
+        )
     return issubclass(api_settings.DEFAULT_SCHEMA_CLASS, AutoSchema)

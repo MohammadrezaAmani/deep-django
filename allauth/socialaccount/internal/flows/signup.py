@@ -1,19 +1,14 @@
+from allauth import app_settings as allauth_settings
+from allauth.account import app_settings as account_settings
+from allauth.account.adapter import get_adapter as get_account_adapter
+from allauth.account.utils import assess_unique_email, complete_signup, user_username
+from allauth.socialaccount import app_settings
+from allauth.socialaccount.adapter import get_adapter
+from allauth.socialaccount.models import SocialLogin
 from django.forms import ValidationError
 from django.http import HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import render
 from django.urls import reverse
-
-from allauth import app_settings as allauth_settings
-from allauth.account import app_settings as account_settings
-from allauth.account.adapter import get_adapter as get_account_adapter
-from allauth.account.utils import (
-    assess_unique_email,
-    complete_signup,
-    user_username,
-)
-from allauth.socialaccount import app_settings
-from allauth.socialaccount.adapter import get_adapter
-from allauth.socialaccount.models import SocialLogin
 
 
 def get_pending_signup(request):

@@ -1,9 +1,6 @@
 import logging
-import requests
 
-from django import forms
-from django.core.exceptions import PermissionDenied
-from django.views.generic import View
+import requests
 
 from allauth.socialaccount import app_settings
 from allauth.socialaccount.adapter import get_adapter
@@ -23,9 +20,11 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2CallbackView,
     OAuth2LoginView,
 )
+from django import forms
+from django.core.exceptions import PermissionDenied
+from django.views.generic import View
 
 from .forms import FacebookConnectForm
-
 
 logger = logging.getLogger(__name__)
 

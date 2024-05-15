@@ -7,7 +7,6 @@ import re
 from weakref import WeakKeyDictionary
 
 from django.utils.encoding import smart_str
-
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
@@ -20,7 +19,7 @@ class ViewInspector:
     """
 
     # Used in _get_description_section()
-    header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
+    header_regex = re.compile("^[a-zA-Z][0-9A-Za-z_]*:")
 
     def __init__(self):
         self.instance_schemas = WeakKeyDictionary()
@@ -78,26 +77,31 @@ class ViewInspector:
         """
         view = self.view
 
-        method_name = getattr(view, 'action', method.lower())
+        method_name = getattr(view, "action", method.lower())
         method_docstring = getattr(view, method_name, None).__doc__
         if method_docstring:
             # An explicit docstring on the method or action.
-            return self._get_description_section(view, method.lower(), formatting.dedent(smart_str(method_docstring)))
+            return self._get_description_section(
+                view, method.lower(), formatting.dedent(smart_str(method_docstring))
+            )
         else:
-            return self._get_description_section(view, getattr(view, 'action', method.lower()),
-                                                 view.get_view_description())
+            return self._get_description_section(
+                view,
+                getattr(view, "action", method.lower()),
+                view.get_view_description(),
+            )
 
     def _get_description_section(self, view, header, description):
         lines = description.splitlines()
-        current_section = ''
-        sections = {'': ''}
+        current_section = ""
+        sections = {"": ""}
 
         for line in lines:
             if self.header_regex.match(line):
-                current_section, separator, lead = line.partition(':')
+                current_section, separator, lead = line.partition(":")
                 sections[current_section] = lead.strip()
             else:
-                sections[current_section] += '\n' + line
+                sections[current_section] += "\n" + line
 
         # TODO: SCHEMA_COERCE_METHOD_NAMES appears here and in `SchemaGenerator.get_keys`
         coerce_method_names = api_settings.SCHEMA_COERCE_METHOD_NAMES
@@ -106,20 +110,21 @@ class ViewInspector:
         if header in coerce_method_names:
             if coerce_method_names[header] in sections:
                 return sections[coerce_method_names[header]].strip()
-        return sections[''].strip()
+        return sections[""].strip()
 
 
 class DefaultSchema(ViewInspector):
     """Allows overriding AutoSchema using DEFAULT_SCHEMA_CLASS setting"""
+
     def __get__(self, instance, owner):
         result = super().__get__(instance, owner)
         if not isinstance(result, DefaultSchema):
             return result
 
         inspector_class = api_settings.DEFAULT_SCHEMA_CLASS
-        assert issubclass(inspector_class, ViewInspector), (
-            "DEFAULT_SCHEMA_CLASS must be set to a ViewInspector (usually an AutoSchema) subclass"
-        )
+        assert issubclass(
+            inspector_class, ViewInspector
+        ), "DEFAULT_SCHEMA_CLASS must be set to a ViewInspector (usually an AutoSchema) subclass"
         inspector = inspector_class()
         inspector.view = instance
         return inspector

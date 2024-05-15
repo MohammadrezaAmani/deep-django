@@ -1,12 +1,11 @@
-from django.contrib import messages
-from django.urls import reverse
-
 from allauth.account import app_settings, signals
 from allauth.account.adapter import get_adapter
 from allauth.account.models import EmailAddress
 from allauth.account.reauthentication import raise_if_reauthentication_required
 from allauth.core.internal.httpkit import get_frontend_url
 from allauth.utils import build_absolute_uri
+from django.contrib import messages
+from django.urls import reverse
 
 
 def can_delete_email(email_address):

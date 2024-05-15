@@ -9,7 +9,6 @@ from allauth.account.internal.flows import (
     signup,
 )
 
-
 __all__ = [
     "password_reset",
     "password_change",

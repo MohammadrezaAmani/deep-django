@@ -1,9 +1,8 @@
-from django.contrib.messages.middleware import MessageMiddleware
-from django.contrib.sessions.middleware import SessionMiddleware
-
 from pytest_django.asserts import assertTemplateUsed
 
 from allauth.account.decorators import verified_email_required
+from django.contrib.messages.middleware import MessageMiddleware
+from django.contrib.sessions.middleware import SessionMiddleware
 
 
 def test_verified_email_required(user_factory, rf):

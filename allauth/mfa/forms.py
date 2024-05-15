@@ -1,6 +1,3 @@
-from django import forms
-from django.utils.translation import gettext_lazy as _
-
 from allauth.account.adapter import get_adapter as get_account_adapter
 from allauth.account.models import EmailAddress
 from allauth.core import context, ratelimit
@@ -8,6 +5,8 @@ from allauth.mfa import totp
 from allauth.mfa.adapter import get_adapter
 from allauth.mfa.internal import flows
 from allauth.mfa.models import Authenticator
+from django import forms
+from django.utils.translation import gettext_lazy as _
 
 
 class BaseAuthenticateForm(forms.Form):

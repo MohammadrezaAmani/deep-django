@@ -7,7 +7,6 @@ from . import app_settings
 from .app_settings import AuthenticationMethod
 from .utils import filter_users_by_email, filter_users_by_username
 
-
 _stash = local()
 
 

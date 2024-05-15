@@ -1,6 +1,5 @@
-from django.contrib import admin
-
 from allauth.mfa.models import Authenticator
+from django.contrib import admin
 
 
 @admin.register(Authenticator)

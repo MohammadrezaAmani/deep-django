@@ -7,7 +7,6 @@ import binascii
 from django.contrib.auth import authenticate, get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
 from django.utils.translation import gettext_lazy as _
-
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
 
 
@@ -17,7 +16,7 @@ def get_authorization_header(request):
 
     Hide some test client ickyness where the header can be unicode.
     """
-    auth = request.META.get('HTTP_AUTHORIZATION', b'')
+    auth = request.META.get("HTTP_AUTHORIZATION", b"")
     if isinstance(auth, str):
         # Work around django test client oddness
         auth = auth.encode(HTTP_HEADER_ENCODING)
@@ -54,7 +53,8 @@ class BasicAuthentication(BaseAuthentication):
     """
     HTTP Basic authentication against username/password.
     """
-    www_authenticate_realm = 'api'
+
+    www_authenticate_realm = "api"
 
     def authenticate(self, request):
         """
@@ -63,25 +63,27 @@ class BasicAuthentication(BaseAuthentication):
         """
         auth = get_authorization_header(request).split()
 
-        if not auth or auth[0].lower() != b'basic':
+        if not auth or auth[0].lower() != b"basic":
             return None
 
         if len(auth) == 1:
-            msg = _('Invalid basic header. No credentials provided.')
+            msg = _("Invalid basic header. No credentials provided.")
             raise exceptions.AuthenticationFailed(msg)
         elif len(auth) > 2:
-            msg = _('Invalid basic header. Credentials string should not contain spaces.')
+            msg = _(
+                "Invalid basic header. Credentials string should not contain spaces."
+            )
             raise exceptions.AuthenticationFailed(msg)
 
         try:
             try:
-                auth_decoded = base64.b64decode(auth[1]).decode('utf-8')
+                auth_decoded = base64.b64decode(auth[1]).decode("utf-8")
             except UnicodeDecodeError:
-                auth_decoded = base64.b64decode(auth[1]).decode('latin-1')
+                auth_decoded = base64.b64decode(auth[1]).decode("latin-1")
 
-            userid, password = auth_decoded.split(':', 1)
+            userid, password = auth_decoded.split(":", 1)
         except (TypeError, ValueError, UnicodeDecodeError, binascii.Error):
-            msg = _('Invalid basic header. Credentials not correctly base64 encoded.')
+            msg = _("Invalid basic header. Credentials not correctly base64 encoded.")
             raise exceptions.AuthenticationFailed(msg)
 
         return self.authenticate_credentials(userid, password, request)
@@ -91,17 +93,14 @@ class BasicAuthentication(BaseAuthentication):
         Authenticate the userid and password against username and password
         with optional request for context.
         """
-        credentials = {
-            get_user_model().USERNAME_FIELD: userid,
-            'password': password
-        }
+        credentials = {get_user_model().USERNAME_FIELD: userid, "password": password}
         user = authenticate(request=request, **credentials)
 
         if user is None:
-            raise exceptions.AuthenticationFailed(_('Invalid username/password.'))
+            raise exceptions.AuthenticationFailed(_("Invalid username/password."))
 
         if not user.is_active:
-            raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
+            raise exceptions.AuthenticationFailed(_("User inactive or deleted."))
 
         return (user, None)
 
@@ -121,7 +120,7 @@ class SessionAuthentication(BaseAuthentication):
         """
 
         # Get the session-based user from the underlying HttpRequest object
-        user = getattr(request._request, 'user', None)
+        user = getattr(request._request, "user", None)
 
         # Unauthenticated, CSRF validation not required
         if not user or not user.is_active:
@@ -136,6 +135,7 @@ class SessionAuthentication(BaseAuthentication):
         """
         Enforce CSRF validation for session based authentication.
         """
+
         def dummy_get_response(request):  # pragma: no cover
             return None
 
@@ -145,7 +145,7 @@ class SessionAuthentication(BaseAuthentication):
         reason = check.process_view(request, None, (), {})
         if reason:
             # CSRF failed, bail with explicit error message
-            raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
+            raise exceptions.PermissionDenied("CSRF Failed: %s" % reason)
 
 
 class TokenAuthentication(BaseAuthentication):
@@ -158,13 +158,14 @@ class TokenAuthentication(BaseAuthentication):
         Authorization: Token 401f7ac837da42b97f613d789819ff93537bee6a
     """
 
-    keyword = 'Token'
+    keyword = "Token"
     model = None
 
     def get_model(self):
         if self.model is not None:
             return self.model
         from rest_framework.authtoken.models import Token
+
         return Token
 
     """
@@ -181,16 +182,18 @@ class TokenAuthentication(BaseAuthentication):
             return None
 
         if len(auth) == 1:
-            msg = _('Invalid token header. No credentials provided.')
+            msg = _("Invalid token header. No credentials provided.")
             raise exceptions.AuthenticationFailed(msg)
         elif len(auth) > 2:
-            msg = _('Invalid token header. Token string should not contain spaces.')
+            msg = _("Invalid token header. Token string should not contain spaces.")
             raise exceptions.AuthenticationFailed(msg)
 
         try:
             token = auth[1].decode()
         except UnicodeError:
-            msg = _('Invalid token header. Token string should not contain invalid characters.')
+            msg = _(
+                "Invalid token header. Token string should not contain invalid characters."
+            )
             raise exceptions.AuthenticationFailed(msg)
 
         return self.authenticate_credentials(token)
@@ -198,12 +201,12 @@ class TokenAuthentication(BaseAuthentication):
     def authenticate_credentials(self, key):
         model = self.get_model()
         try:
-            token = model.objects.select_related('user').get(key=key)
+            token = model.objects.select_related("user").get(key=key)
         except model.DoesNotExist:
-            raise exceptions.AuthenticationFailed(_('Invalid token.'))
+            raise exceptions.AuthenticationFailed(_("Invalid token."))
 
         if not token.user.is_active:
-            raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
+            raise exceptions.AuthenticationFailed(_("User inactive or deleted."))
 
         return (token.user, token)
 

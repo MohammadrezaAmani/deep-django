@@ -7,7 +7,6 @@ The appropriate renderer is called during Django's template response rendering.
 from http.client import responses
 
 from django.template.response import SimpleTemplateResponse
-
 from rest_framework.serializers import Serializer
 
 
@@ -17,9 +16,15 @@ class Response(SimpleTemplateResponse):
     arbitrary media types.
     """
 
-    def __init__(self, data=None, status=None,
-                 template_name=None, headers=None,
-                 exception=False, content_type=None):
+    def __init__(
+        self,
+        data=None,
+        status=None,
+        template_name=None,
+        headers=None,
+        exception=False,
+        content_type=None,
+    ):
         """
         Alters the init arguments slightly.
         For example, drop 'template_name', and instead use 'data'.
@@ -31,9 +36,9 @@ class Response(SimpleTemplateResponse):
 
         if isinstance(data, Serializer):
             msg = (
-                'You passed a Serializer instance as data, but '
-                'probably meant to pass serialized `.data` or '
-                '`.error`. representation.'
+                "You passed a Serializer instance as data, but "
+                "probably meant to pass serialized `.data` or "
+                "`.error`. representation."
             )
             raise AssertionError(msg)
 
@@ -52,14 +57,14 @@ class Response(SimpleTemplateResponse):
 
     @property
     def rendered_content(self):
-        renderer = getattr(self, 'accepted_renderer', None)
-        accepted_media_type = getattr(self, 'accepted_media_type', None)
-        context = getattr(self, 'renderer_context', None)
+        renderer = getattr(self, "accepted_renderer", None)
+        accepted_media_type = getattr(self, "accepted_media_type", None)
+        context = getattr(self, "renderer_context", None)
 
         assert renderer, ".accepted_renderer not set on Response"
         assert accepted_media_type, ".accepted_media_type not set on Response"
         assert context is not None, ".renderer_context not set on Response"
-        context['response'] = self
+        context["response"] = self
 
         media_type = renderer.media_type
         charset = renderer.charset
@@ -69,18 +74,17 @@ class Response(SimpleTemplateResponse):
             content_type = "{}; charset={}".format(media_type, charset)
         elif content_type is None:
             content_type = media_type
-        self['Content-Type'] = content_type
+        self["Content-Type"] = content_type
 
         ret = renderer.render(self.data, accepted_media_type, context)
         if isinstance(ret, str):
             assert charset, (
-                'renderer returned unicode, and did not specify '
-                'a charset value.'
+                "renderer returned unicode, and did not specify " "a charset value."
             )
             return ret.encode(charset)
 
         if not ret:
-            del self['Content-Type']
+            del self["Content-Type"]
 
         return ret
 
@@ -90,7 +94,7 @@ class Response(SimpleTemplateResponse):
         Returns reason text corresponding to our HTTP response status code.
         Provided for convenience.
         """
-        return responses.get(self.status_code, '')
+        return responses.get(self.status_code, "")
 
     def __getstate__(self):
         """
@@ -98,10 +102,15 @@ class Response(SimpleTemplateResponse):
         """
         state = super().__getstate__()
         for key in (
-            'accepted_renderer', 'renderer_context', 'resolver_match',
-            'client', 'request', 'json', 'wsgi_request'
+            "accepted_renderer",
+            "renderer_context",
+            "resolver_match",
+            "client",
+            "request",
+            "json",
+            "wsgi_request",
         ):
             if key in state:
                 del state[key]
-        state['_closable_objects'] = []
+        state["_closable_objects"] = []
         return state

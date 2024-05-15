@@ -7,7 +7,6 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2LoginView,
 )
 
-
 USER_FIELDS = [
     "age",
     "birthday",

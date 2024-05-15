@@ -23,7 +23,7 @@ class SchemaView(APIView):
             if coreapi.is_enabled():
                 self.renderer_classes = [
                     renderers.CoreAPIOpenAPIRenderer,
-                    renderers.CoreJSONRenderer
+                    renderers.CoreJSONRenderer,
                 ]
             else:
                 self.renderer_classes = [

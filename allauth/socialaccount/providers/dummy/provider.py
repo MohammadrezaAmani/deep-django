@@ -1,9 +1,8 @@
+from allauth.account.models import EmailAddress
+from allauth.socialaccount.providers.base import Provider, ProviderAccount
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.http import urlencode
-
-from allauth.account.models import EmailAddress
-from allauth.socialaccount.providers.base import Provider, ProviderAccount
 
 
 class DummyAccount(ProviderAccount):

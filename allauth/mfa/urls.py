@@ -1,7 +1,5 @@
-from django.urls import include, path
-
 from allauth.mfa import app_settings, views
-
+from django.urls import include, path
 
 urlpatterns = [
     path("authenticate/", views.authenticate, name="mfa_authenticate"),

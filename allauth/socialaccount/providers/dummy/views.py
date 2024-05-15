@@ -1,8 +1,3 @@
-from django.core.exceptions import PermissionDenied
-from django.urls import reverse
-from django.utils.http import urlencode
-from django.views.generic.edit import FormView
-
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.helpers import (
     complete_social_login,
@@ -13,6 +8,10 @@ from allauth.socialaccount.providers.base.constants import AuthError
 from allauth.socialaccount.providers.base.views import BaseLoginView
 from allauth.socialaccount.providers.dummy.forms import AuthenticateForm
 from allauth.socialaccount.providers.dummy.provider import DummyProvider
+from django.core.exceptions import PermissionDenied
+from django.urls import reverse
+from django.utils.http import urlencode
+from django.views.generic.edit import FormView
 
 
 class LoginView(BaseLoginView):

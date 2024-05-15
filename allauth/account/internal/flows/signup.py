@@ -1,8 +1,7 @@
-from django.urls import reverse
-
 from allauth.account.adapter import get_adapter
 from allauth.core.internal.httpkit import get_frontend_url
 from allauth.utils import build_absolute_uri
+from django.urls import reverse
 
 
 def send_unknown_account_mail(request, email):

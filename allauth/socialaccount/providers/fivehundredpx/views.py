@@ -9,7 +9,6 @@ from allauth.socialaccount.providers.oauth.views import (
 
 from .provider import FiveHundredPxProvider
 
-
 API_BASE = "https://api.500px.com/v1"
 
 

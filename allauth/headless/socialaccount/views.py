@@ -1,5 +1,3 @@
-from django.core.exceptions import ValidationError
-
 from allauth.headless.base.response import AuthenticationResponse
 from allauth.headless.base.views import APIView, AuthenticatedAPIView
 from allauth.headless.socialaccount.forms import RedirectToProviderForm
@@ -13,6 +11,7 @@ from allauth.headless.socialaccount.response import SocialAccountsResponse
 from allauth.socialaccount.helpers import render_authentication_error
 from allauth.socialaccount.internal import flows
 from allauth.socialaccount.models import SocialAccount
+from django.core.exceptions import ValidationError
 
 
 class ProviderSignupView(APIView):

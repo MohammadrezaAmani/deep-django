@@ -11,7 +11,11 @@ from rest_framework.views import APIView
 class ObtainAuthToken(APIView):
     throttle_classes = ()
     permission_classes = ()
-    parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
+    parser_classes = (
+        parsers.FormParser,
+        parsers.MultiPartParser,
+        parsers.JSONParser,
+    )
     renderer_classes = (renderers.JSONRenderer,)
     serializer_class = AuthTokenSerializer
 
@@ -21,7 +25,7 @@ class ObtainAuthToken(APIView):
                 coreapi.Field(
                     name="username",
                     required=True,
-                    location='form',
+                    location="form",
                     schema=coreschema.String(
                         title="Username",
                         description="Valid username for authentication",
@@ -30,7 +34,7 @@ class ObtainAuthToken(APIView):
                 coreapi.Field(
                     name="password",
                     required=True,
-                    location='form',
+                    location="form",
                     schema=coreschema.String(
                         title="Password",
                         description="Valid password for authentication",
@@ -41,22 +45,18 @@ class ObtainAuthToken(APIView):
         )
 
     def get_serializer_context(self):
-        return {
-            'request': self.request,
-            'format': self.format_kwarg,
-            'view': self
-        }
+        return {"request": self.request, "format": self.format_kwarg, "view": self}
 
     def get_serializer(self, *args, **kwargs):
-        kwargs['context'] = self.get_serializer_context()
+        kwargs["context"] = self.get_serializer_context()
         return self.serializer_class(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
+        user = serializer.validated_data["user"]
         token, created = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key})
+        return Response({"token": token.key})
 
 
 obtain_auth_token = ObtainAuthToken.as_view()

@@ -5,11 +5,9 @@ from collections.abc import Sequence
 from typing import Any
 from urllib.parse import urlsplit
 
-from django.conf import settings
-from django.core.checks import CheckMessage
-from django.core.checks import Error
-
 from corsheaders.conf import conf
+from django.conf import settings
+from django.core.checks import CheckMessage, Error
 
 re_type = type(re.compile(""))
 

@@ -1,7 +1,7 @@
-from django.urls import reverse
-
 import pytest
 from pytest_django.asserts import assertTemplateUsed
+
+from django.urls import reverse
 
 
 @pytest.mark.parametrize(

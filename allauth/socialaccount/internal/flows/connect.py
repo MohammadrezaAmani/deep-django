@@ -1,6 +1,3 @@
-from django.contrib import messages
-from django.http import HttpResponseRedirect
-
 from allauth import app_settings as allauth_settings
 from allauth.account import app_settings as account_settings
 from allauth.account.adapter import get_adapter as get_account_adapter
@@ -12,6 +9,8 @@ from allauth.account.reauthentication import (
 from allauth.socialaccount import signals
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.models import SocialAccount, SocialLogin
+from django.contrib import messages
+from django.http import HttpResponseRedirect
 
 
 def validate_disconnect(request, account):

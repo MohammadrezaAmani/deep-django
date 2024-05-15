@@ -1,7 +1,5 @@
-from django import template
-
 from allauth.account.utils import user_display
-
+from django import template
 
 register = template.Library()
 

@@ -1,11 +1,10 @@
-from django.conf import settings
-from django.http import HttpResponse
-from django.urls import path
-
 import pytest
 
 from allauth.account.middleware import AccountMiddleware
 from allauth.core.exceptions import ImmediateHttpResponse
+from django.conf import settings
+from django.http import HttpResponse
+from django.urls import path
 
 
 @pytest.mark.parametrize(

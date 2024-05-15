@@ -1,13 +1,12 @@
 from functools import wraps
 
-from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-
 from allauth.account import reauthentication
 from allauth.account.models import EmailAddress
 from allauth.account.utils import send_email_confirmation
 from allauth.core.exceptions import ReauthenticationRequired
+from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 
 
 def verified_email_required(

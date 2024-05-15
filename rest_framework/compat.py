@@ -9,7 +9,7 @@ from django.views.generic import View
 def unicode_http_header(value):
     # Coerce HTTP header value to unicode.
     if isinstance(value, bytes):
-        return value.decode('iso-8859-1')
+        return value.decode("iso-8859-1")
     return value
 
 
@@ -61,16 +61,16 @@ except ImportError:
 
 
 # PATCH method is not implemented by Django
-if 'patch' not in View.http_method_names:
-    View.http_method_names = View.http_method_names + ['patch']
+if "patch" not in View.http_method_names:
+    View.http_method_names = View.http_method_names + ["patch"]
 
 
 # Markdown is optional (version 3.0+ required)
 try:
     import markdown
 
-    HEADERID_EXT_PATH = 'markdown.extensions.toc'
-    LEVEL_PARAM = 'baselevel'
+    HEADERID_EXT_PATH = "markdown.extensions.toc"
+    LEVEL_PARAM = "baselevel"
 
     def apply_markdown(text):
         """
@@ -78,16 +78,13 @@ try:
         of '#' style headers to <h2>.
         """
         extensions = [HEADERID_EXT_PATH]
-        extension_configs = {
-            HEADERID_EXT_PATH: {
-                LEVEL_PARAM: '2'
-            }
-        }
+        extension_configs = {HEADERID_EXT_PATH: {LEVEL_PARAM: "2"}}
         md = markdown.Markdown(
             extensions=extensions, extension_configs=extension_configs
         )
         md_filter_add_syntax_highlight(md)
         return md.convert(text)
+
 except ImportError:
     apply_markdown = None
     markdown = None
@@ -105,7 +102,7 @@ try:
 
     def pygments_css(style):
         formatter = HtmlFormatter(style=style)
-        return formatter.get_style_defs('.highlight')
+        return formatter.get_style_defs(".highlight")
 
 except ImportError:
     pygments = None
@@ -116,6 +113,7 @@ except ImportError:
     def pygments_css(style):
         return None
 
+
 if markdown is not None and pygments is not None:
     # starting from this blogpost and modified to support current markdown extensions API
     # https://zerokspot.com/weblog/2008/06/18/syntax-highlighting-in-markdown-with-pygments/
@@ -125,8 +123,7 @@ if markdown is not None and pygments is not None:
     from markdown.preprocessors import Preprocessor
 
     class CodeBlockPreprocessor(Preprocessor):
-        pattern = re.compile(
-            r'^\s*``` *([^\n]+)\n(.+?)^\s*```', re.M | re.S)
+        pattern = re.compile(r"^\s*``` *([^\n]+)\n(.+?)^\s*```", re.M | re.S)
 
         formatter = HtmlFormatter()
 
@@ -136,17 +133,24 @@ if markdown is not None and pygments is not None:
                     lexer = get_lexer_by_name(m.group(1))
                 except (ValueError, NameError):
                     lexer = TextLexer()
-                code = m.group(2).replace('\t', '    ')
+                code = m.group(2).replace("\t", "    ")
                 code = pygments.highlight(code, lexer, self.formatter)
-                code = code.replace('\n\n', '\n&nbsp;\n').replace('\n', '<br />').replace('\\@', '@')
-                return '\n\n%s\n\n' % code
+                code = (
+                    code.replace("\n\n", "\n&nbsp;\n")
+                    .replace("\n", "<br />")
+                    .replace("\\@", "@")
+                )
+                return "\n\n%s\n\n" % code
+
             ret = self.pattern.sub(repl, "\n".join(lines))
             return ret.split("\n")
 
     def md_filter_add_syntax_highlight(md):
-        md.preprocessors.register(CodeBlockPreprocessor(), 'highlight', 40)
+        md.preprocessors.register(CodeBlockPreprocessor(), "highlight", 40)
         return True
+
 else:
+
     def md_filter_add_syntax_highlight(md):
         return False
 
@@ -183,8 +187,7 @@ if django.VERSION >= (5, 1):
     from django.core.validators import ip_address_validators
 else:
     # Django <= 5.1: create a compatibility shim for ip_address_validators
-    from django.core.validators import \
-        ip_address_validators as _ip_address_validators
+    from django.core.validators import ip_address_validators as _ip_address_validators
 
     def ip_address_validators(protocol, unpack_ipv4):
         return _ip_address_validators(protocol, unpack_ipv4)[0]
@@ -192,6 +195,6 @@ else:
 
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
 # See: https://bugs.python.org/issue22767
-SHORT_SEPARATORS = (',', ':')
-LONG_SEPARATORS = (', ', ': ')
-INDENT_SEPARATORS = (',', ': ')
+SHORT_SEPARATORS = (",", ":")
+LONG_SEPARATORS = (", ", ": ")
+INDENT_SEPARATORS = (",", ": ")

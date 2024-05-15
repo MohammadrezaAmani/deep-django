@@ -1,16 +1,9 @@
 from __future__ import annotations
 
-from typing import cast
-from typing import List
-from typing import Pattern
-from typing import Sequence
-from typing import Tuple
-from typing import Union
+from typing import List, Pattern, Sequence, Tuple, Union, cast
 
+from corsheaders.defaults import default_headers, default_methods
 from django.conf import settings
-
-from corsheaders.defaults import default_headers
-from corsheaders.defaults import default_methods
 
 
 class Settings:

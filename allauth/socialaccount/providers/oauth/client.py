@@ -7,14 +7,13 @@ Inspired by:
 
 from urllib.parse import parse_qsl, urlparse
 
-from django.http import HttpResponseRedirect
-from django.utils.http import urlencode
-from django.utils.translation import gettext as _
-
 from requests_oauthlib import OAuth1
 
 from allauth.socialaccount.adapter import get_adapter
 from allauth.utils import build_absolute_uri, get_request_param
+from django.http import HttpResponseRedirect
+from django.utils.http import urlencode
+from django.utils.translation import gettext as _
 
 
 def get_token_prefix(url):

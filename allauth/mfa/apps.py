@@ -1,7 +1,6 @@
+from allauth import app_settings
 from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
-
-from allauth import app_settings
 
 
 class MFAConfig(AppConfig):

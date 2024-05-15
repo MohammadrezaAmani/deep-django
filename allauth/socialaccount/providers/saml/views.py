@@ -1,12 +1,6 @@
 import binascii
 import logging
 
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.urls import reverse
-from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.decorators.csrf import csrf_exempt
-
 from onelogin.saml2.auth import OneLogin_Saml2_Settings
 from onelogin.saml2.errors import OneLogin_Saml2_Error
 
@@ -16,20 +10,16 @@ from allauth.socialaccount.helpers import (
     render_authentication_error,
 )
 from allauth.socialaccount.models import SocialLogin
-from allauth.socialaccount.providers.base.constants import (
-    AuthError,
-    AuthProcess,
-)
+from allauth.socialaccount.providers.base.constants import AuthError, AuthProcess
 from allauth.socialaccount.providers.base.views import BaseLoginView
 from allauth.socialaccount.sessions import LoginSession
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 
-from .utils import (
-    build_auth,
-    build_saml_config,
-    decode_relay_state,
-    get_app_or_404,
-)
-
+from .utils import build_auth, build_saml_config, decode_relay_state, get_app_or_404
 
 logger = logging.getLogger(__name__)
 

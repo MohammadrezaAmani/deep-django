@@ -5,7 +5,6 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2LoginView,
 )
 
-
 USER_FIELDS = [
     "first_name",
     "last_name",

@@ -1,7 +1,6 @@
-from django import forms
-
 from allauth.usersessions.internal import flows
 from allauth.usersessions.models import UserSession
+from django import forms
 
 
 class ManageUserSessionsForm(forms.Form):

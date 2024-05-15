@@ -1,10 +1,8 @@
+from allauth.socialaccount.adapter import get_adapter
+from allauth.utils import get_request_param
 from django import template
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.safestring import mark_safe
-
-from allauth.socialaccount.adapter import get_adapter
-from allauth.utils import get_request_param
-
 
 register = template.Library()
 

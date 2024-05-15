@@ -4,15 +4,17 @@ import string
 import warnings
 from urllib.parse import urlparse
 
+from allauth import app_settings as allauth_app_settings
+from allauth.account import signals
+from allauth.account.app_settings import AuthenticationMethod
+from allauth.core import context, ratelimit
+from allauth.core.internal.adapter import BaseAdapter
+from allauth.utils import generate_unique_username, import_attribute
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import (
-    authenticate,
-    get_backends,
-    get_user_model,
-    login as django_login,
-    logout as django_logout,
-)
+from django.contrib.auth import authenticate, get_backends, get_user_model
+from django.contrib.auth import login as django_login
+from django.contrib.auth import logout as django_logout
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.password_validation import (
     MinimumLengthValidator,
@@ -21,11 +23,7 @@ from django.contrib.auth.password_validation import (
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import FieldDoesNotExist
 from django.core.mail import EmailMessage, EmailMultiAlternatives
-from django.http import (
-    HttpResponse,
-    HttpResponseRedirect,
-    HttpResponseServerError,
-)
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import resolve_url
 from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
@@ -35,13 +33,6 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
-
-from allauth import app_settings as allauth_app_settings
-from allauth.account import signals
-from allauth.account.app_settings import AuthenticationMethod
-from allauth.core import context, ratelimit
-from allauth.core.internal.adapter import BaseAdapter
-from allauth.utils import generate_unique_username, import_attribute
 
 from . import app_settings
 

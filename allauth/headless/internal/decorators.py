@@ -1,11 +1,10 @@
 from functools import wraps
 from types import SimpleNamespace
 
-from django.middleware.csrf import get_token
-from django.views.decorators.csrf import csrf_exempt
-
 from allauth.headless.constants import Client
 from allauth.headless.internal import authkit
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import csrf_exempt
 
 
 def mark_request_as_headless(request, client):

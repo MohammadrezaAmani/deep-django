@@ -1,12 +1,11 @@
 import json
 
-from django.conf import settings
-from django.urls import reverse
-
 import pytest
 from pytest_django.asserts import assertRedirects
 
 from allauth.account import app_settings
+from django.conf import settings
+from django.urls import reverse
 
 
 @pytest.mark.parametrize(

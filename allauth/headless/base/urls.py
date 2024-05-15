@@ -1,6 +1,5 @@
-from django.urls import path
-
 from allauth.headless.base import views
+from django.urls import path
 
 
 def build_urlpatterns(client):

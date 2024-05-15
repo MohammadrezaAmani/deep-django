@@ -1,9 +1,8 @@
-from django.urls import include, path
-
 from allauth import app_settings as allauth_settings
 from allauth.headless.account import urls as account_urls
 from allauth.headless.base import urls as base_urls
 from allauth.headless.constants import Client
+from django.urls import include, path
 
 
 def build_urlpatterns(client):

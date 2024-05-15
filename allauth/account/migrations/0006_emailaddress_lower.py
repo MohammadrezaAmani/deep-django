@@ -1,8 +1,7 @@
+from allauth.account import app_settings
 from django.conf import settings
 from django.db import migrations
 from django.db.models.functions import Lower
-
-from allauth.account import app_settings
 
 
 def forwards(apps, schema_editor):

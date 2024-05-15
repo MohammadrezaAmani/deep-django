@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.db import migrations, models
 
-
 EMAIL_MAX_LENGTH = getattr(settings, "ACCOUNT_EMAIL_MAX_LENGTH", 254)
 
 

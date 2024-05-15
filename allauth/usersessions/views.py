@@ -1,14 +1,13 @@
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.urls import reverse_lazy
-from django.utils.decorators import method_decorator
-from django.views.generic.edit import FormView
-
 from allauth.account import app_settings as account_settings
 from allauth.account.adapter import get_adapter as get_account_adapter
 from allauth.usersessions import app_settings
 from allauth.usersessions.forms import ManageUserSessionsForm
 from allauth.usersessions.models import UserSession
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.generic.edit import FormView
 
 
 @method_decorator(login_required, name="dispatch")

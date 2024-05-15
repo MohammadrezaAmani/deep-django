@@ -1,6 +1,5 @@
-from django.core.exceptions import ValidationError
-
 from allauth.core import context
+from django.core.exceptions import ValidationError
 
 
 class BaseAdapter:

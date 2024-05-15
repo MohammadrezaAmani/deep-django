@@ -14,15 +14,23 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
-    EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, ProhibitNullCharactersValidator, RegexValidator,
-    URLValidator
+    EmailValidator,
+    MaxLengthValidator,
+    MaxValueValidator,
+    MinLengthValidator,
+    MinValueValidator,
+    ProhibitNullCharactersValidator,
+    RegexValidator,
+    URLValidator,
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
 from django.utils import timezone
 from django.utils.dateparse import (
-    parse_date, parse_datetime, parse_duration, parse_time
+    parse_date,
+    parse_datetime,
+    parse_duration,
+    parse_time,
 )
 from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_str
@@ -54,6 +62,7 @@ class empty:
 
     It is required because `None` may be a valid input or output value.
     """
+
     pass
 
 
@@ -62,6 +71,7 @@ class BuiltinSignatureError(Exception):
     Built-in function signatures are not inspectable. This exception is raised
     so the serializer can raise a helpful error message.
     """
+
     pass
 
 
@@ -75,18 +85,23 @@ def is_simple_callable(obj):
     # Bail early since we cannot inspect built-in function signatures.
     if inspect.isbuiltin(obj):
         raise BuiltinSignatureError(
-            'Built-in function signatures are not inspectable. '
-            'Wrap the function call in a simple, pure Python function.')
+            "Built-in function signatures are not inspectable. "
+            "Wrap the function call in a simple, pure Python function."
+        )
 
-    if not (inspect.isfunction(obj) or inspect.ismethod(obj) or isinstance(obj, functools.partial)):
+    if not (
+        inspect.isfunction(obj)
+        or inspect.ismethod(obj)
+        or isinstance(obj, functools.partial)
+    ):
         return False
 
     sig = inspect.signature(obj)
     params = sig.parameters.values()
     return all(
-        param.kind == param.VAR_POSITIONAL or
-        param.kind == param.VAR_KEYWORD or
-        param.default != param.empty
+        param.kind == param.VAR_POSITIONAL
+        or param.kind == param.VAR_KEYWORD
+        or param.default != param.empty
         for param in params
     )
 
@@ -113,7 +128,11 @@ def get_attribute(instance, attrs):
                 # If we raised an Attribute or KeyError here it'd get treated
                 # as an omitted field in `Field.get_attribute()`. Instead we
                 # raise a ValueError to ensure the exception is not masked.
-                raise ValueError('Exception raised in callable attribute "{}"; original exception was: {}'.format(attr, exc))
+                raise ValueError(
+                    'Exception raised in callable attribute "{}"; original exception was: {}'.format(
+                        attr, exc
+                    )
+                )
 
     return instance
 
@@ -169,6 +188,7 @@ def iter_options(grouped_choices, cutoff=None, cutoff_text=None):
     """
     Helper function for options and option groups in templates.
     """
+
     class StartOptionGroup:
         start_option_group = True
         end_option_group = False
@@ -209,7 +229,7 @@ def iter_options(grouped_choices, cutoff=None, cutoff_text=None):
 
     if cutoff and count >= cutoff and cutoff_text:
         cutoff_text = cutoff_text.format(count=cutoff)
-        yield Option(value='n/a', display_text=cutoff_text, disabled=True)
+        yield Option(value="n/a", display_text=cutoff_text, disabled=True)
 
 
 def get_error_detail(exc_info):
@@ -217,21 +237,27 @@ def get_error_detail(exc_info):
     Given a Django ValidationError, return a list of ErrorDetail,
     with the `code` populated.
     """
-    code = getattr(exc_info, 'code', None) or 'invalid'
+    code = getattr(exc_info, "code", None) or "invalid"
 
     try:
         error_dict = exc_info.error_dict
     except AttributeError:
         return [
-            ErrorDetail((error.message % error.params) if error.params else error.message,
-                        code=error.code if error.code else code)
-            for error in exc_info.error_list]
+            ErrorDetail(
+                (error.message % error.params) if error.params else error.message,
+                code=error.code if error.code else code,
+            )
+            for error in exc_info.error_list
+        ]
     return {
         k: [
-            ErrorDetail((error.message % error.params) if error.params else error.message,
-                        code=error.code if error.code else code)
+            ErrorDetail(
+                (error.message % error.params) if error.params else error.message,
+                code=error.code if error.code else code,
+            )
             for error in errors
-        ] for k, errors in error_dict.items()
+        ]
+        for k, errors in error_dict.items()
     }
 
 
@@ -241,6 +267,7 @@ class CreateOnlyDefault:
     for create operations, but that do not return any value for update
     operations.
     """
+
     requires_context = True
 
     def __init__(self, default):
@@ -251,39 +278,39 @@ class CreateOnlyDefault:
         if is_update:
             raise SkipField()
         if callable(self.default):
-            if getattr(self.default, 'requires_context', False):
+            if getattr(self.default, "requires_context", False):
                 return self.default(serializer_field)
             else:
                 return self.default()
         return self.default
 
     def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__, repr(self.default))
+        return "%s(%s)" % (self.__class__.__name__, repr(self.default))
 
 
 class CurrentUserDefault:
     requires_context = True
 
     def __call__(self, serializer_field):
-        return serializer_field.context['request'].user
+        return serializer_field.context["request"].user
 
     def __repr__(self):
-        return '%s()' % self.__class__.__name__
+        return "%s()" % self.__class__.__name__
 
 
 class SkipField(Exception):
     pass
 
 
-REGEX_TYPE = type(re.compile(''))
+REGEX_TYPE = type(re.compile(""))
 
-NOT_READ_ONLY_WRITE_ONLY = 'May not set both `read_only` and `write_only`'
-NOT_READ_ONLY_REQUIRED = 'May not set both `read_only` and `required`'
-NOT_REQUIRED_DEFAULT = 'May not set both `required` and `default`'
-USE_READONLYFIELD = 'Field(read_only=True) should be ReadOnlyField'
+NOT_READ_ONLY_WRITE_ONLY = "May not set both `read_only` and `write_only`"
+NOT_READ_ONLY_REQUIRED = "May not set both `read_only` and `required`"
+NOT_REQUIRED_DEFAULT = "May not set both `required` and `default`"
+USE_READONLYFIELD = "Field(read_only=True) should be ReadOnlyField"
 MISSING_ERROR_MESSAGE = (
-    'ValidationError raised by `{class_name}`, but error key `{key}` does '
-    'not exist in the `error_messages` dictionary.'
+    "ValidationError raised by `{class_name}`, but error key `{key}` does "
+    "not exist in the `error_messages` dictionary."
 )
 
 
@@ -291,17 +318,29 @@ class Field:
     _creation_counter = 0
 
     default_error_messages = {
-        'required': _('This field is required.'),
-        'null': _('This field may not be null.')
+        "required": _("This field is required."),
+        "null": _("This field may not be null."),
     }
     default_validators = []
     default_empty_html = empty
     initial = None
 
-    def __init__(self, *, read_only=False, write_only=False,
-                 required=None, default=empty, initial=empty, source=None,
-                 label=None, help_text=None, style=None,
-                 error_messages=None, validators=None, allow_null=False):
+    def __init__(
+        self,
+        *,
+        read_only=False,
+        write_only=False,
+        required=None,
+        default=empty,
+        initial=empty,
+        source=None,
+        label=None,
+        help_text=None,
+        style=None,
+        error_messages=None,
+        validators=None,
+        allow_null=False
+    ):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
 
@@ -340,7 +379,7 @@ class Field:
         # Collect default error message from self and parent classes
         messages = {}
         for cls in reversed(self.__class__.__mro__):
-            messages.update(getattr(cls, 'default_error_messages', {}))
+            messages.update(getattr(cls, "default_error_messages", {}))
         messages.update(error_messages or {})
         self.error_messages = messages
 
@@ -360,8 +399,8 @@ class Field:
         assert self.source != field_name, (
             "It is redundant to specify `source='%s'` on field '%s' in "
             "serializer '%s', because it is the same as the field name. "
-            "Remove the `source` keyword argument." %
-            (field_name, self.__class__.__name__, parent.__class__.__name__)
+            "Remove the `source` keyword argument."
+            % (field_name, self.__class__.__name__, parent.__class__.__name__)
         )
 
         self.field_name = field_name
@@ -369,7 +408,7 @@ class Field:
 
         # `self.label` should default to being based on the field name.
         if self.label is None:
-            self.label = field_name.replace('_', ' ').capitalize()
+            self.label = field_name.replace("_", " ").capitalize()
 
         # self.source should default to being the same as the field name.
         if self.source is None:
@@ -377,16 +416,16 @@ class Field:
 
         # self.source_attrs is a list of attributes that need to be looked up
         # when serializing the instance, or populating the validated data.
-        if self.source == '*':
+        if self.source == "*":
             self.source_attrs = []
         else:
-            self.source_attrs = self.source.split('.')
+            self.source_attrs = self.source.split(".")
 
     # .validators is a lazily loaded property, that gets its default
     # value from `get_validators`.
     @property
     def validators(self):
-        if not hasattr(self, '_validators'):
+        if not hasattr(self, "_validators"):
             self._validators = self.get_validators()
         return self._validators
 
@@ -415,18 +454,18 @@ class Field:
             # HTML forms will represent empty fields as '', and cannot
             # represent None or False values directly.
             if self.field_name not in dictionary:
-                if getattr(self.root, 'partial', False):
+                if getattr(self.root, "partial", False):
                     return empty
                 return self.default_empty_html
             ret = dictionary[self.field_name]
-            if ret == '' and self.allow_null:
+            if ret == "" and self.allow_null:
                 # If the field is blank, and null is a valid value then
                 # determine if we should use null instead.
-                return '' if getattr(self, 'allow_blank', False) else None
-            elif ret == '' and not self.required:
+                return "" if getattr(self, "allow_blank", False) else None
+            elif ret == "" and not self.required:
                 # If the field is blank, and emptiness is valid then
                 # determine if we should use emptiness instead.
-                return '' if getattr(self, 'allow_blank', False) else empty
+                return "" if getattr(self, "allow_blank", False) else empty
             return ret
         return dictionary.get(self.field_name, empty)
 
@@ -439,10 +478,10 @@ class Field:
             return get_attribute(instance, self.source_attrs)
         except BuiltinSignatureError as exc:
             msg = (
-                'Field source for `{serializer}.{field}` maps to a built-in '
-                'function type and is invalid. Define a property or method on '
-                'the `{instance}` instance that wraps the call to the built-in '
-                'function.'.format(
+                "Field source for `{serializer}.{field}` maps to a built-in "
+                "function type and is invalid. Define a property or method on "
+                "the `{instance}` instance that wraps the call to the built-in "
+                "function.".format(
                     serializer=self.parent.__class__.__name__,
                     field=self.field_name,
                     instance=instance.__class__.__name__,
@@ -457,16 +496,16 @@ class Field:
             if not self.required:
                 raise SkipField()
             msg = (
-                'Got {exc_type} when attempting to get a value for field '
-                '`{field}` on serializer `{serializer}`.\nThe serializer '
-                'field might be named incorrectly and not match '
-                'any attribute or key on the `{instance}` instance.\n'
-                'Original exception text was: {exc}.'.format(
+                "Got {exc_type} when attempting to get a value for field "
+                "`{field}` on serializer `{serializer}`.\nThe serializer "
+                "field might be named incorrectly and not match "
+                "any attribute or key on the `{instance}` instance.\n"
+                "Original exception text was: {exc}.".format(
                     exc_type=type(exc).__name__,
                     field=self.field_name,
                     serializer=self.parent.__class__.__name__,
                     instance=instance.__class__.__name__,
-                    exc=exc
+                    exc=exc,
                 )
             )
             raise type(exc)(msg)
@@ -480,11 +519,11 @@ class Field:
         raise `SkipField`, indicating that no value should be set in the
         validated data for this field.
         """
-        if self.default is empty or getattr(self.root, 'partial', False):
+        if self.default is empty or getattr(self.root, "partial", False):
             # No default, or this is a partial update.
             raise SkipField()
         if callable(self.default):
-            if getattr(self.default, 'requires_context', False):
+            if getattr(self.default, "requires_context", False):
                 return self.default(self)
             else:
                 return self.default()
@@ -506,19 +545,19 @@ class Field:
             return (True, self.get_default())
 
         if data is empty:
-            if getattr(self.root, 'partial', False):
+            if getattr(self.root, "partial", False):
                 raise SkipField()
             if self.required:
-                self.fail('required')
+                self.fail("required")
             return (True, self.get_default())
 
         if data is None:
             if not self.allow_null:
-                self.fail('null')
+                self.fail("null")
             # Nullable `source='*'` fields should not be skipped when its named
             # field is given a null value. This is because `source='*'` means
             # the field is passed the entire object, which is not null.
-            elif self.source == '*':
+            elif self.source == "*":
                 return (False, None)
             return (True, None)
 
@@ -549,7 +588,7 @@ class Field:
         errors = []
         for validator in self.validators:
             try:
-                if getattr(validator, 'requires_context', False):
+                if getattr(validator, "requires_context", False):
                     validator(value, self)
                 else:
                     validator(value)
@@ -570,9 +609,9 @@ class Field:
         Transform the *incoming* primitive data into a native value.
         """
         raise NotImplementedError(
-            '{cls}.to_internal_value() must be implemented for field '
-            '{field_name}. If you do not need to support write operations '
-            'you probably want to subclass `ReadOnlyField` instead.'.format(
+            "{cls}.to_internal_value() must be implemented for field "
+            "{field_name}. If you do not need to support write operations "
+            "you probably want to subclass `ReadOnlyField` instead.".format(
                 cls=self.__class__.__name__,
                 field_name=self.field_name,
             )
@@ -583,7 +622,7 @@ class Field:
         Transform the *outgoing* native value into primitive data.
         """
         raise NotImplementedError(
-            '{cls}.to_representation() must be implemented for field {field_name}.'.format(
+            "{cls}.to_representation() must be implemented for field {field_name}.".format(
                 cls=self.__class__.__name__,
                 field_name=self.field_name,
             )
@@ -617,7 +656,7 @@ class Field:
         """
         Returns the context as passed to the root serializer on initialization.
         """
-        return getattr(self.root, '_context', {})
+        return getattr(self.root, "_context", {})
 
     def __new__(cls, *args, **kwargs):
         """
@@ -642,7 +681,11 @@ class Field:
             for item in self._args
         ]
         kwargs = {
-            key: (copy.deepcopy(value, memo) if (key not in ('validators', 'regex')) else value)
+            key: (
+                copy.deepcopy(value, memo)
+                if (key not in ("validators", "regex"))
+                else value
+            )
             for key, value in self._kwargs.items()
         }
         return self.__class__(*args, **kwargs)
@@ -658,37 +701,36 @@ class Field:
 
 # Boolean types...
 
+
 class BooleanField(Field):
-    default_error_messages = {
-        'invalid': _('Must be a valid boolean.')
-    }
+    default_error_messages = {"invalid": _("Must be a valid boolean.")}
     default_empty_html = False
     initial = False
     TRUE_VALUES = {
-        't',
-        'y',
-        'yes',
-        'true',
-        'on',
-        '1',
+        "t",
+        "y",
+        "yes",
+        "true",
+        "on",
+        "1",
         1,
         True,
     }
     FALSE_VALUES = {
-        'f',
-        'n',
-        'no',
-        'false',
-        'off',
-        '0',
+        "f",
+        "n",
+        "no",
+        "false",
+        "off",
+        "0",
         0,
         0.0,
         False,
     }
-    NULL_VALUES = {'null', '', None}
+    NULL_VALUES = {"null", "", None}
 
     def __init__(self, **kwargs):
-        if kwargs.get('allow_null', False):
+        if kwargs.get("allow_null", False):
             self.default_empty_html = None
             self.initial = None
         super().__init__(**kwargs)
@@ -721,29 +763,32 @@ class BooleanField(Field):
 
 # String types...
 
+
 class CharField(Field):
     default_error_messages = {
-        'invalid': _('Not a valid string.'),
-        'blank': _('This field may not be blank.'),
-        'max_length': _('Ensure this field has no more than {max_length} characters.'),
-        'min_length': _('Ensure this field has at least {min_length} characters.'),
+        "invalid": _("Not a valid string."),
+        "blank": _("This field may not be blank."),
+        "max_length": _("Ensure this field has no more than {max_length} characters."),
+        "min_length": _("Ensure this field has at least {min_length} characters."),
     }
-    initial = ''
+    initial = ""
 
     def __init__(self, **kwargs):
-        self.allow_blank = kwargs.pop('allow_blank', False)
-        self.trim_whitespace = kwargs.pop('trim_whitespace', True)
-        self.max_length = kwargs.pop('max_length', None)
-        self.min_length = kwargs.pop('min_length', None)
+        self.allow_blank = kwargs.pop("allow_blank", False)
+        self.trim_whitespace = kwargs.pop("trim_whitespace", True)
+        self.max_length = kwargs.pop("max_length", None)
+        self.min_length = kwargs.pop("min_length", None)
         super().__init__(**kwargs)
         if self.max_length is not None:
-            message = lazy_format(self.error_messages['max_length'], max_length=self.max_length)
-            self.validators.append(
-                MaxLengthValidator(self.max_length, message=message))
+            message = lazy_format(
+                self.error_messages["max_length"], max_length=self.max_length
+            )
+            self.validators.append(MaxLengthValidator(self.max_length, message=message))
         if self.min_length is not None:
-            message = lazy_format(self.error_messages['min_length'], min_length=self.min_length)
-            self.validators.append(
-                MinLengthValidator(self.min_length, message=message))
+            message = lazy_format(
+                self.error_messages["min_length"], min_length=self.min_length
+            )
+            self.validators.append(MinLengthValidator(self.min_length, message=message))
 
         self.validators.append(ProhibitNullCharactersValidator())
         self.validators.append(ProhibitSurrogateCharactersValidator())
@@ -752,18 +797,25 @@ class CharField(Field):
         # Test for the empty string here so that it does not get validated,
         # and so that subclasses do not need to handle it explicitly
         # inside the `to_internal_value()` method.
-        if data == '' or (self.trim_whitespace and str(data).strip() == ''):
+        if data == "" or (self.trim_whitespace and str(data).strip() == ""):
             if not self.allow_blank:
-                self.fail('blank')
-            return ''
+                self.fail("blank")
+            return ""
         return super().run_validation(data)
 
     def to_internal_value(self, data):
         # We're lenient with allowing basic numerics to be coerced into strings,
         # but other types should fail. Eg. unclear if booleans should represent as `true` or `True`,
         # and composites such as lists are likely user error.
-        if isinstance(data, bool) or not isinstance(data, (str, int, float,)):
-            self.fail('invalid')
+        if isinstance(data, bool) or not isinstance(
+            data,
+            (
+                str,
+                int,
+                float,
+            ),
+        ):
+            self.fail("invalid")
         value = str(data)
         return value.strip() if self.trim_whitespace else value
 
@@ -772,66 +824,71 @@ class CharField(Field):
 
 
 class EmailField(CharField):
-    default_error_messages = {
-        'invalid': _('Enter a valid email address.')
-    }
+    default_error_messages = {"invalid": _("Enter a valid email address.")}
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        validator = EmailValidator(message=self.error_messages['invalid'])
+        validator = EmailValidator(message=self.error_messages["invalid"])
         self.validators.append(validator)
 
 
 class RegexField(CharField):
     default_error_messages = {
-        'invalid': _('This value does not match the required pattern.')
+        "invalid": _("This value does not match the required pattern.")
     }
 
     def __init__(self, regex, **kwargs):
         super().__init__(**kwargs)
-        validator = RegexValidator(regex, message=self.error_messages['invalid'])
+        validator = RegexValidator(regex, message=self.error_messages["invalid"])
         self.validators.append(validator)
 
 
 class SlugField(CharField):
     default_error_messages = {
-        'invalid': _('Enter a valid "slug" consisting of letters, numbers, underscores or hyphens.'),
-        'invalid_unicode': _('Enter a valid "slug" consisting of Unicode letters, numbers, underscores, or hyphens.')
+        "invalid": _(
+            'Enter a valid "slug" consisting of letters, numbers, underscores or hyphens.'
+        ),
+        "invalid_unicode": _(
+            'Enter a valid "slug" consisting of Unicode letters, numbers, underscores, or hyphens.'
+        ),
     }
 
     def __init__(self, allow_unicode=False, **kwargs):
         super().__init__(**kwargs)
         self.allow_unicode = allow_unicode
         if self.allow_unicode:
-            validator = RegexValidator(re.compile(r'^[-\w]+\Z', re.UNICODE), message=self.error_messages['invalid_unicode'])
+            validator = RegexValidator(
+                re.compile(r"^[-\w]+\Z", re.UNICODE),
+                message=self.error_messages["invalid_unicode"],
+            )
         else:
-            validator = RegexValidator(re.compile(r'^[-a-zA-Z0-9_]+$'), message=self.error_messages['invalid'])
+            validator = RegexValidator(
+                re.compile(r"^[-a-zA-Z0-9_]+$"), message=self.error_messages["invalid"]
+            )
         self.validators.append(validator)
 
 
 class URLField(CharField):
-    default_error_messages = {
-        'invalid': _('Enter a valid URL.')
-    }
+    default_error_messages = {"invalid": _("Enter a valid URL.")}
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        validator = URLValidator(message=self.error_messages['invalid'])
+        validator = URLValidator(message=self.error_messages["invalid"])
         self.validators.append(validator)
 
 
 class UUIDField(Field):
-    valid_formats = ('hex_verbose', 'hex', 'int', 'urn')
+    valid_formats = ("hex_verbose", "hex", "int", "urn")
 
     default_error_messages = {
-        'invalid': _('Must be a valid UUID.'),
+        "invalid": _("Must be a valid UUID."),
     }
 
     def __init__(self, **kwargs):
-        self.uuid_format = kwargs.pop('format', 'hex_verbose')
+        self.uuid_format = kwargs.pop("format", "hex_verbose")
         if self.uuid_format not in self.valid_formats:
             raise ValueError(
-                'Invalid format for uuid representation. '
+                "Invalid format for uuid representation. "
                 'Must be one of "{}"'.format('", "'.join(self.valid_formats))
             )
         super().__init__(**kwargs)
@@ -844,13 +901,13 @@ class UUIDField(Field):
                 elif isinstance(data, str):
                     return uuid.UUID(hex=data)
                 else:
-                    self.fail('invalid', value=data)
-            except (ValueError):
-                self.fail('invalid', value=data)
+                    self.fail("invalid", value=data)
+            except ValueError:
+                self.fail("invalid", value=data)
         return data
 
     def to_representation(self, value):
-        if self.uuid_format == 'hex_verbose':
+        if self.uuid_format == "hex_verbose":
             return str(value)
         else:
             return getattr(value, self.uuid_format)
@@ -860,63 +917,66 @@ class IPAddressField(CharField):
     """Support both IPAddressField and GenericIPAddressField"""
 
     default_error_messages = {
-        'invalid': _('Enter a valid IPv4 or IPv6 address.'),
+        "invalid": _("Enter a valid IPv4 or IPv6 address."),
     }
 
-    def __init__(self, protocol='both', **kwargs):
+    def __init__(self, protocol="both", **kwargs):
         self.protocol = protocol.lower()
-        self.unpack_ipv4 = (self.protocol == 'both')
+        self.unpack_ipv4 = self.protocol == "both"
         super().__init__(**kwargs)
         validators = ip_address_validators(protocol, self.unpack_ipv4)
         self.validators.extend(validators)
 
     def to_internal_value(self, data):
         if not isinstance(data, str):
-            self.fail('invalid', value=data)
+            self.fail("invalid", value=data)
 
-        if ':' in data:
+        if ":" in data:
             try:
-                if self.protocol in ('both', 'ipv6'):
+                if self.protocol in ("both", "ipv6"):
                     return clean_ipv6_address(data, self.unpack_ipv4)
             except DjangoValidationError:
-                self.fail('invalid', value=data)
+                self.fail("invalid", value=data)
 
         return super().to_internal_value(data)
 
 
 # Number types...
 
+
 class IntegerField(Field):
     default_error_messages = {
-        'invalid': _('A valid integer is required.'),
-        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
-        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_string_length': _('String value too large.')
+        "invalid": _("A valid integer is required."),
+        "max_value": _("Ensure this value is less than or equal to {max_value}."),
+        "min_value": _("Ensure this value is greater than or equal to {min_value}."),
+        "max_string_length": _("String value too large."),
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
-    re_decimal = re.compile(r'\.0*\s*$')  # allow e.g. '1.0' as an int, but not '1.2'
+    re_decimal = re.compile(r"\.0*\s*$")  # allow e.g. '1.0' as an int, but not '1.2'
 
     def __init__(self, **kwargs):
-        self.max_value = kwargs.pop('max_value', None)
-        self.min_value = kwargs.pop('min_value', None)
+        self.max_value = kwargs.pop("max_value", None)
+        self.min_value = kwargs.pop("min_value", None)
         super().__init__(**kwargs)
         if self.max_value is not None:
-            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
-            self.validators.append(
-                MaxValueValidator(self.max_value, message=message))
+            message = lazy_format(
+                self.error_messages["max_value"], max_value=self.max_value
+            )
+            self.validators.append(MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
-            self.validators.append(
-                MinValueValidator(self.min_value, message=message))
+            message = lazy_format(
+                self.error_messages["min_value"], min_value=self.min_value
+            )
+            self.validators.append(MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
         if isinstance(data, str) and len(data) > self.MAX_STRING_LENGTH:
-            self.fail('max_string_length')
+            self.fail("max_string_length")
 
         try:
-            data = int(self.re_decimal.sub('', str(data)))
+            data = int(self.re_decimal.sub("", str(data)))
         except (ValueError, TypeError):
-            self.fail('invalid')
+            self.fail("invalid")
         return data
 
     def to_representation(self, value):
@@ -925,38 +985,39 @@ class IntegerField(Field):
 
 class FloatField(Field):
     default_error_messages = {
-        'invalid': _('A valid number is required.'),
-        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
-        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_string_length': _('String value too large.'),
-        'overflow': _('Integer value too large to convert to float')
+        "invalid": _("A valid number is required."),
+        "max_value": _("Ensure this value is less than or equal to {max_value}."),
+        "min_value": _("Ensure this value is greater than or equal to {min_value}."),
+        "max_string_length": _("String value too large."),
+        "overflow": _("Integer value too large to convert to float"),
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
     def __init__(self, **kwargs):
-        self.max_value = kwargs.pop('max_value', None)
-        self.min_value = kwargs.pop('min_value', None)
+        self.max_value = kwargs.pop("max_value", None)
+        self.min_value = kwargs.pop("min_value", None)
         super().__init__(**kwargs)
         if self.max_value is not None:
-            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
-            self.validators.append(
-                MaxValueValidator(self.max_value, message=message))
+            message = lazy_format(
+                self.error_messages["max_value"], max_value=self.max_value
+            )
+            self.validators.append(MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
-            self.validators.append(
-                MinValueValidator(self.min_value, message=message))
+            message = lazy_format(
+                self.error_messages["min_value"], min_value=self.min_value
+            )
+            self.validators.append(MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
-
         if isinstance(data, str) and len(data) > self.MAX_STRING_LENGTH:
-            self.fail('max_string_length')
+            self.fail("max_string_length")
 
         try:
             return float(data)
         except (TypeError, ValueError):
-            self.fail('invalid')
+            self.fail("invalid")
         except OverflowError:
-            self.fail('overflow')
+            self.fail("overflow")
 
     def to_representation(self, value):
         return float(value)
@@ -964,18 +1025,34 @@ class FloatField(Field):
 
 class DecimalField(Field):
     default_error_messages = {
-        'invalid': _('A valid number is required.'),
-        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
-        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
-        'max_decimal_places': _('Ensure that there are no more than {max_decimal_places} decimal places.'),
-        'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.'),
-        'max_string_length': _('String value too large.')
+        "invalid": _("A valid number is required."),
+        "max_value": _("Ensure this value is less than or equal to {max_value}."),
+        "min_value": _("Ensure this value is greater than or equal to {min_value}."),
+        "max_digits": _(
+            "Ensure that there are no more than {max_digits} digits in total."
+        ),
+        "max_decimal_places": _(
+            "Ensure that there are no more than {max_decimal_places} decimal places."
+        ),
+        "max_whole_digits": _(
+            "Ensure that there are no more than {max_whole_digits} digits before the decimal point."
+        ),
+        "max_string_length": _("String value too large."),
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
-    def __init__(self, max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None,
-                 localize=False, rounding=None, normalize_output=False, **kwargs):
+    def __init__(
+        self,
+        max_digits,
+        decimal_places,
+        coerce_to_string=None,
+        max_value=None,
+        min_value=None,
+        localize=False,
+        rounding=None,
+        normalize_output=False,
+        **kwargs
+    ):
         self.max_digits = max_digits
         self.decimal_places = decimal_places
         self.localize = localize
@@ -988,9 +1065,13 @@ class DecimalField(Field):
         self.max_value = max_value
         self.min_value = min_value
 
-        if self.max_value is not None and not isinstance(self.max_value, decimal.Decimal):
+        if self.max_value is not None and not isinstance(
+            self.max_value, decimal.Decimal
+        ):
             logger.warning("max_value in DecimalField should be Decimal type.")
-        if self.min_value is not None and not isinstance(self.min_value, decimal.Decimal):
+        if self.min_value is not None and not isinstance(
+            self.min_value, decimal.Decimal
+        ):
             logger.warning("min_value in DecimalField should be Decimal type.")
 
         if self.max_digits is not None and self.decimal_places is not None:
@@ -1001,22 +1082,30 @@ class DecimalField(Field):
         super().__init__(**kwargs)
 
         if self.max_value is not None:
-            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
-            self.validators.append(
-                MaxValueValidator(self.max_value, message=message))
+            message = lazy_format(
+                self.error_messages["max_value"], max_value=self.max_value
+            )
+            self.validators.append(MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
-            self.validators.append(
-                MinValueValidator(self.min_value, message=message))
+            message = lazy_format(
+                self.error_messages["min_value"], min_value=self.min_value
+            )
+            self.validators.append(MinValueValidator(self.min_value, message=message))
 
         if rounding is not None:
-            valid_roundings = [v for k, v in vars(decimal).items() if k.startswith('ROUND_')]
-            assert rounding in valid_roundings, (
-                'Invalid rounding option %s. Valid values for rounding are: %s' % (rounding, valid_roundings))
+            valid_roundings = [
+                v for k, v in vars(decimal).items() if k.startswith("ROUND_")
+            ]
+            assert (
+                rounding in valid_roundings
+            ), "Invalid rounding option %s. Valid values for rounding are: %s" % (
+                rounding,
+                valid_roundings,
+            )
         self.rounding = rounding
 
     def validate_empty_values(self, data):
-        if smart_str(data).strip() == '' and self.allow_null:
+        if smart_str(data).strip() == "" and self.allow_null:
             return (True, None)
         return super().validate_empty_values(data)
 
@@ -1032,19 +1121,19 @@ class DecimalField(Field):
             data = sanitize_separators(data)
 
         if len(data) > self.MAX_STRING_LENGTH:
-            self.fail('max_string_length')
+            self.fail("max_string_length")
 
         try:
             value = decimal.Decimal(data)
         except decimal.DecimalException:
-            self.fail('invalid')
+            self.fail("invalid")
 
         if value.is_nan():
-            self.fail('invalid')
+            self.fail("invalid")
 
         # Check for infinity and negative infinity.
-        if value in (decimal.Decimal('Inf'), decimal.Decimal('-Inf')):
-            self.fail('invalid')
+        if value in (decimal.Decimal("Inf"), decimal.Decimal("-Inf")):
+            self.fail("invalid")
 
         return self.quantize(self.validate_precision(value))
 
@@ -1075,20 +1164,22 @@ class DecimalField(Field):
             decimal_places = total_digits
 
         if self.max_digits is not None and total_digits > self.max_digits:
-            self.fail('max_digits', max_digits=self.max_digits)
+            self.fail("max_digits", max_digits=self.max_digits)
         if self.decimal_places is not None and decimal_places > self.decimal_places:
-            self.fail('max_decimal_places', max_decimal_places=self.decimal_places)
+            self.fail("max_decimal_places", max_decimal_places=self.decimal_places)
         if self.max_whole_digits is not None and whole_digits > self.max_whole_digits:
-            self.fail('max_whole_digits', max_whole_digits=self.max_whole_digits)
+            self.fail("max_whole_digits", max_whole_digits=self.max_whole_digits)
 
         return value
 
     def to_representation(self, value):
-        coerce_to_string = getattr(self, 'coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING)
+        coerce_to_string = getattr(
+            self, "coerce_to_string", api_settings.COERCE_DECIMAL_TO_STRING
+        )
 
         if value is None:
             if coerce_to_string:
-                return ''
+                return ""
             else:
                 return None
 
@@ -1105,7 +1196,7 @@ class DecimalField(Field):
         if self.localize:
             return localize_input(quantized)
 
-        return '{:f}'.format(quantized)
+        return "{:f}".format(quantized)
 
     def quantize(self, value):
         """
@@ -1118,24 +1209,29 @@ class DecimalField(Field):
         if self.max_digits is not None:
             context.prec = self.max_digits
         return value.quantize(
-            decimal.Decimal('.1') ** self.decimal_places,
+            decimal.Decimal(".1") ** self.decimal_places,
             rounding=self.rounding,
-            context=context
+            context=context,
         )
 
 
 # Date & time fields...
 
+
 class DateTimeField(Field):
     default_error_messages = {
-        'invalid': _('Datetime has wrong format. Use one of these formats instead: {format}.'),
-        'date': _('Expected a datetime but got a date.'),
-        'make_aware': _('Invalid datetime for the timezone "{timezone}".'),
-        'overflow': _('Datetime value out of range.')
+        "invalid": _(
+            "Datetime has wrong format. Use one of these formats instead: {format}."
+        ),
+        "date": _("Expected a datetime but got a date."),
+        "make_aware": _('Invalid datetime for the timezone "{timezone}".'),
+        "overflow": _("Datetime value out of range."),
     }
     datetime_parser = datetime.datetime.strptime
 
-    def __init__(self, format=empty, input_formats=None, default_timezone=None, **kwargs):
+    def __init__(
+        self, format=empty, input_formats=None, default_timezone=None, **kwargs
+    ):
         if format is not empty:
             self.format = format
         if input_formats is not None:
@@ -1149,24 +1245,26 @@ class DateTimeField(Field):
         When `self.default_timezone` is `None`, always return naive datetimes.
         When `self.default_timezone` is not `None`, always return aware datetimes.
         """
-        field_timezone = self.timezone if hasattr(self, 'timezone') else self.default_timezone()
+        field_timezone = (
+            self.timezone if hasattr(self, "timezone") else self.default_timezone()
+        )
 
         if field_timezone is not None:
             if timezone.is_aware(value):
                 try:
                     return value.astimezone(field_timezone)
                 except OverflowError:
-                    self.fail('overflow')
+                    self.fail("overflow")
             try:
                 dt = timezone.make_aware(value, field_timezone)
                 # When the resulting datetime is a ZoneInfo instance, it won't necessarily
                 # throw given an invalid datetime, so we need to specifically check.
                 if not valid_datetime(dt):
-                    self.fail('make_aware', timezone=field_timezone)
+                    self.fail("make_aware", timezone=field_timezone)
                 return dt
             except Exception as e:
                 if pytz and isinstance(e, pytz.exceptions.InvalidTimeError):
-                    self.fail('make_aware', timezone=field_timezone)
+                    self.fail("make_aware", timezone=field_timezone)
                 raise e
         elif (field_timezone is None) and timezone.is_aware(value):
             return timezone.make_naive(value, datetime.timezone.utc)
@@ -1176,10 +1274,14 @@ class DateTimeField(Field):
         return timezone.get_current_timezone() if settings.USE_TZ else None
 
     def to_internal_value(self, value):
-        input_formats = getattr(self, 'input_formats', api_settings.DATETIME_INPUT_FORMATS)
+        input_formats = getattr(
+            self, "input_formats", api_settings.DATETIME_INPUT_FORMATS
+        )
 
-        if isinstance(value, datetime.date) and not isinstance(value, datetime.datetime):
-            self.fail('date')
+        if isinstance(value, datetime.date) and not isinstance(
+            value, datetime.datetime
+        ):
+            self.fail("date")
 
         if isinstance(value, datetime.datetime):
             return self.enforce_timezone(value)
@@ -1195,13 +1297,13 @@ class DateTimeField(Field):
                 return self.enforce_timezone(parsed)
 
         humanized_format = humanize_datetime.datetime_formats(input_formats)
-        self.fail('invalid', format=humanized_format)
+        self.fail("invalid", format=humanized_format)
 
     def to_representation(self, value):
         if not value:
             return None
 
-        output_format = getattr(self, 'format', api_settings.DATETIME_FORMAT)
+        output_format = getattr(self, "format", api_settings.DATETIME_FORMAT)
 
         if output_format is None or isinstance(value, str):
             return value
@@ -1210,16 +1312,18 @@ class DateTimeField(Field):
 
         if output_format.lower() == ISO_8601:
             value = value.isoformat()
-            if value.endswith('+00:00'):
-                value = value[:-6] + 'Z'
+            if value.endswith("+00:00"):
+                value = value[:-6] + "Z"
             return value
         return value.strftime(output_format)
 
 
 class DateField(Field):
     default_error_messages = {
-        'invalid': _('Date has wrong format. Use one of these formats instead: {format}.'),
-        'datetime': _('Expected a date but got a datetime.'),
+        "invalid": _(
+            "Date has wrong format. Use one of these formats instead: {format}."
+        ),
+        "datetime": _("Expected a date but got a datetime."),
     }
     datetime_parser = datetime.datetime.strptime
 
@@ -1231,10 +1335,10 @@ class DateField(Field):
         super().__init__(**kwargs)
 
     def to_internal_value(self, value):
-        input_formats = getattr(self, 'input_formats', api_settings.DATE_INPUT_FORMATS)
+        input_formats = getattr(self, "input_formats", api_settings.DATE_INPUT_FORMATS)
 
         if isinstance(value, datetime.datetime):
-            self.fail('datetime')
+            self.fail("datetime")
 
         if isinstance(value, datetime.date):
             return value
@@ -1257,13 +1361,13 @@ class DateField(Field):
                     return parsed.date()
 
         humanized_format = humanize_datetime.date_formats(input_formats)
-        self.fail('invalid', format=humanized_format)
+        self.fail("invalid", format=humanized_format)
 
     def to_representation(self, value):
         if not value:
             return None
 
-        output_format = getattr(self, 'format', api_settings.DATE_FORMAT)
+        output_format = getattr(self, "format", api_settings.DATE_FORMAT)
 
         if output_format is None or isinstance(value, str):
             return value
@@ -1272,9 +1376,9 @@ class DateField(Field):
         # not a sensible thing to do, as it means naively dropping
         # any explicit or implicit timezone info.
         assert not isinstance(value, datetime.datetime), (
-            'Expected a `date`, but got a `datetime`. Refusing to coerce, '
-            'as this may mean losing timezone information. Use a custom '
-            'read-only field and deal with timezone issues explicitly.'
+            "Expected a `date`, but got a `datetime`. Refusing to coerce, "
+            "as this may mean losing timezone information. Use a custom "
+            "read-only field and deal with timezone issues explicitly."
         )
 
         if output_format.lower() == ISO_8601:
@@ -1285,7 +1389,9 @@ class DateField(Field):
 
 class TimeField(Field):
     default_error_messages = {
-        'invalid': _('Time has wrong format. Use one of these formats instead: {format}.'),
+        "invalid": _(
+            "Time has wrong format. Use one of these formats instead: {format}."
+        ),
     }
     datetime_parser = datetime.datetime.strptime
 
@@ -1297,7 +1403,7 @@ class TimeField(Field):
         super().__init__(**kwargs)
 
     def to_internal_value(self, value):
-        input_formats = getattr(self, 'input_formats', api_settings.TIME_INPUT_FORMATS)
+        input_formats = getattr(self, "input_formats", api_settings.TIME_INPUT_FORMATS)
 
         if isinstance(value, datetime.time):
             return value
@@ -1320,13 +1426,13 @@ class TimeField(Field):
                     return parsed.time()
 
         humanized_format = humanize_datetime.time_formats(input_formats)
-        self.fail('invalid', format=humanized_format)
+        self.fail("invalid", format=humanized_format)
 
     def to_representation(self, value):
-        if value in (None, ''):
+        if value in (None, ""):
             return None
 
-        output_format = getattr(self, 'format', api_settings.TIME_FORMAT)
+        output_format = getattr(self, "format", api_settings.TIME_FORMAT)
 
         if output_format is None or isinstance(value, str):
             return value
@@ -1335,9 +1441,9 @@ class TimeField(Field):
         # not a sensible thing to do, as it means naively dropping
         # any explicit or implicit timezone info.
         assert not isinstance(value, datetime.datetime), (
-            'Expected a `time`, but got a `datetime`. Refusing to coerce, '
-            'as this may mean losing timezone information. Use a custom '
-            'read-only field and deal with timezone issues explicitly.'
+            "Expected a `time`, but got a `datetime`. Refusing to coerce, "
+            "as this may mean losing timezone information. Use a custom "
+            "read-only field and deal with timezone issues explicitly."
         )
 
         if output_format.lower() == ISO_8601:
@@ -1347,24 +1453,28 @@ class TimeField(Field):
 
 class DurationField(Field):
     default_error_messages = {
-        'invalid': _('Duration has wrong format. Use one of these formats instead: {format}.'),
-        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
-        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'overflow': _('The number of days must be between {min_days} and {max_days}.'),
+        "invalid": _(
+            "Duration has wrong format. Use one of these formats instead: {format}."
+        ),
+        "max_value": _("Ensure this value is less than or equal to {max_value}."),
+        "min_value": _("Ensure this value is greater than or equal to {min_value}."),
+        "overflow": _("The number of days must be between {min_days} and {max_days}."),
     }
 
     def __init__(self, **kwargs):
-        self.max_value = kwargs.pop('max_value', None)
-        self.min_value = kwargs.pop('min_value', None)
+        self.max_value = kwargs.pop("max_value", None)
+        self.min_value = kwargs.pop("min_value", None)
         super().__init__(**kwargs)
         if self.max_value is not None:
-            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
-            self.validators.append(
-                MaxValueValidator(self.max_value, message=message))
+            message = lazy_format(
+                self.error_messages["max_value"], max_value=self.max_value
+            )
+            self.validators.append(MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
-            self.validators.append(
-                MinValueValidator(self.min_value, message=message))
+            message = lazy_format(
+                self.error_messages["min_value"], min_value=self.min_value
+            )
+            self.validators.append(MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, value):
         if isinstance(value, datetime.timedelta):
@@ -1372,10 +1482,14 @@ class DurationField(Field):
         try:
             parsed = parse_duration(str(value))
         except OverflowError:
-            self.fail('overflow', min_days=datetime.timedelta.min.days, max_days=datetime.timedelta.max.days)
+            self.fail(
+                "overflow",
+                min_days=datetime.timedelta.min.days,
+                max_days=datetime.timedelta.max.days,
+            )
         if parsed is not None:
             return parsed
-        self.fail('invalid', format='[DD] [HH:[MM:]]ss[.uuuuuu]')
+        self.fail("invalid", format="[DD] [HH:[MM:]]ss[.uuuuuu]")
 
     def to_representation(self, value):
         return duration_string(value)
@@ -1383,34 +1497,33 @@ class DurationField(Field):
 
 # Choice types...
 
+
 class ChoiceField(Field):
-    default_error_messages = {
-        'invalid_choice': _('"{input}" is not a valid choice.')
-    }
+    default_error_messages = {"invalid_choice": _('"{input}" is not a valid choice.')}
     html_cutoff = None
-    html_cutoff_text = _('More than {count} items...')
+    html_cutoff_text = _("More than {count} items...")
 
     def __init__(self, choices, **kwargs):
         self.choices = choices
-        self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
-        self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
+        self.html_cutoff = kwargs.pop("html_cutoff", self.html_cutoff)
+        self.html_cutoff_text = kwargs.pop("html_cutoff_text", self.html_cutoff_text)
 
-        self.allow_blank = kwargs.pop('allow_blank', False)
+        self.allow_blank = kwargs.pop("allow_blank", False)
 
         super().__init__(**kwargs)
 
     def to_internal_value(self, data):
-        if data == '' and self.allow_blank:
-            return ''
+        if data == "" and self.allow_blank:
+            return ""
         if isinstance(data, Enum) and str(data) != str(data.value):
             data = data.value
         try:
             return self.choice_strings_to_values[str(data)]
         except KeyError:
-            self.fail('invalid_choice', input=data)
+            self.fail("invalid_choice", input=data)
 
     def to_representation(self, value):
-        if value in ('', None):
+        if value in ("", None):
             return value
         if isinstance(value, Enum) and str(value) != str(value.value):
             value = value.value
@@ -1423,7 +1536,7 @@ class ChoiceField(Field):
         return iter_options(
             self.grouped_choices,
             cutoff=self.html_cutoff,
-            cutoff_text=self.html_cutoff_text
+            cutoff_text=self.html_cutoff_text,
         )
 
     def _get_choices(self):
@@ -1437,7 +1550,10 @@ class ChoiceField(Field):
         # Allows us to deal with eg. integer choices while supporting either
         # integer or string input, but still get the correct datatype out.
         self.choice_strings_to_values = {
-            str(key.value) if isinstance(key, Enum) and str(key) != str(key.value) else str(key): key for key in self.choices
+            str(key.value)
+            if isinstance(key, Enum) and str(key) != str(key.value)
+            else str(key): key
+            for key in self.choices
         }
 
     choices = property(_get_choices, _set_choices)
@@ -1445,19 +1561,19 @@ class ChoiceField(Field):
 
 class MultipleChoiceField(ChoiceField):
     default_error_messages = {
-        'invalid_choice': _('"{input}" is not a valid choice.'),
-        'not_a_list': _('Expected a list of items but got type "{input_type}".'),
-        'empty': _('This selection may not be empty.')
+        "invalid_choice": _('"{input}" is not a valid choice.'),
+        "not_a_list": _('Expected a list of items but got type "{input_type}".'),
+        "empty": _("This selection may not be empty."),
     }
     default_empty_html = []
 
     def __init__(self, **kwargs):
-        self.allow_empty = kwargs.pop('allow_empty', True)
+        self.allow_empty = kwargs.pop("allow_empty", True)
         super().__init__(**kwargs)
 
     def get_value(self, dictionary):
         if self.field_name not in dictionary:
-            if getattr(self.root, 'partial', False):
+            if getattr(self.root, "partial", False):
                 return empty
         # We override the default field access in order to support
         # lists in HTML forms.
@@ -1466,10 +1582,10 @@ class MultipleChoiceField(ChoiceField):
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
-        if isinstance(data, str) or not hasattr(data, '__iter__'):
-            self.fail('not_a_list', input_type=type(data).__name__)
+        if isinstance(data, str) or not hasattr(data, "__iter__"):
+            self.fail("not_a_list", input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
-            self.fail('empty')
+            self.fail("empty")
 
         return {
             # Arguments for super() are needed because of scoping inside
@@ -1479,45 +1595,60 @@ class MultipleChoiceField(ChoiceField):
         }
 
     def to_representation(self, value):
-        return {
-            self.choice_strings_to_values.get(str(item), item) for item in value
-        }
+        return {self.choice_strings_to_values.get(str(item), item) for item in value}
 
 
 class FilePathField(ChoiceField):
     default_error_messages = {
-        'invalid_choice': _('"{input}" is not a valid path choice.')
+        "invalid_choice": _('"{input}" is not a valid path choice.')
     }
 
-    def __init__(self, path, match=None, recursive=False, allow_files=True,
-                 allow_folders=False, required=None, **kwargs):
+    def __init__(
+        self,
+        path,
+        match=None,
+        recursive=False,
+        allow_files=True,
+        allow_folders=False,
+        required=None,
+        **kwargs
+    ):
         # Defer to Django's FilePathField implementation to get the
         # valid set of choices.
         field = DjangoFilePathField(
-            path, match=match, recursive=recursive, allow_files=allow_files,
-            allow_folders=allow_folders, required=required
+            path,
+            match=match,
+            recursive=recursive,
+            allow_files=allow_files,
+            allow_folders=allow_folders,
+            required=required,
         )
-        kwargs['choices'] = field.choices
-        kwargs['required'] = required
+        kwargs["choices"] = field.choices
+        kwargs["required"] = required
         super().__init__(**kwargs)
 
 
 # File types...
 
+
 class FileField(Field):
     default_error_messages = {
-        'required': _('No file was submitted.'),
-        'invalid': _('The submitted data was not a file. Check the encoding type on the form.'),
-        'no_name': _('No filename could be determined.'),
-        'empty': _('The submitted file is empty.'),
-        'max_length': _('Ensure this filename has at most {max_length} characters (it has {length}).'),
+        "required": _("No file was submitted."),
+        "invalid": _(
+            "The submitted data was not a file. Check the encoding type on the form."
+        ),
+        "no_name": _("No filename could be determined."),
+        "empty": _("The submitted file is empty."),
+        "max_length": _(
+            "Ensure this filename has at most {max_length} characters (it has {length})."
+        ),
     }
 
     def __init__(self, **kwargs):
-        self.max_length = kwargs.pop('max_length', None)
-        self.allow_empty_file = kwargs.pop('allow_empty_file', False)
-        if 'use_url' in kwargs:
-            self.use_url = kwargs.pop('use_url')
+        self.max_length = kwargs.pop("max_length", None)
+        self.allow_empty_file = kwargs.pop("allow_empty_file", False)
+        if "use_url" in kwargs:
+            self.use_url = kwargs.pop("use_url")
         super().__init__(**kwargs)
 
     def to_internal_value(self, data):
@@ -1526,14 +1657,14 @@ class FileField(Field):
             file_name = data.name
             file_size = data.size
         except AttributeError:
-            self.fail('invalid')
+            self.fail("invalid")
 
         if not file_name:
-            self.fail('no_name')
+            self.fail("no_name")
         if not self.allow_empty_file and not file_size:
-            self.fail('empty')
+            self.fail("empty")
         if self.max_length and len(file_name) > self.max_length:
-            self.fail('max_length', max_length=self.max_length, length=len(file_name))
+            self.fail("max_length", max_length=self.max_length, length=len(file_name))
 
         return data
 
@@ -1541,13 +1672,13 @@ class FileField(Field):
         if not value:
             return None
 
-        use_url = getattr(self, 'use_url', api_settings.UPLOADED_FILES_USE_URL)
+        use_url = getattr(self, "use_url", api_settings.UPLOADED_FILES_USE_URL)
         if use_url:
             try:
                 url = value.url
             except AttributeError:
                 return None
-            request = self.context.get('request', None)
+            request = self.context.get("request", None)
             if request is not None:
                 return request.build_absolute_uri(url)
             return url
@@ -1557,13 +1688,13 @@ class FileField(Field):
 
 class ImageField(FileField):
     default_error_messages = {
-        'invalid_image': _(
-            'Upload a valid image. The file you uploaded was either not an image or a corrupted image.'
+        "invalid_image": _(
+            "Upload a valid image. The file you uploaded was either not an image or a corrupted image."
         ),
     }
 
     def __init__(self, **kwargs):
-        self._DjangoImageField = kwargs.pop('_DjangoImageField', DjangoImageField)
+        self._DjangoImageField = kwargs.pop("_DjangoImageField", DjangoImageField)
         super().__init__(**kwargs)
 
     def to_internal_value(self, data):
@@ -1577,6 +1708,7 @@ class ImageField(FileField):
 
 
 # Composite field types...
+
 
 class _UnvalidatedField(Field):
     def __init__(self, **kwargs):
@@ -1595,36 +1727,40 @@ class ListField(Field):
     child = _UnvalidatedField()
     initial = []
     default_error_messages = {
-        'not_a_list': _('Expected a list of items but got type "{input_type}".'),
-        'empty': _('This list may not be empty.'),
-        'min_length': _('Ensure this field has at least {min_length} elements.'),
-        'max_length': _('Ensure this field has no more than {max_length} elements.')
+        "not_a_list": _('Expected a list of items but got type "{input_type}".'),
+        "empty": _("This list may not be empty."),
+        "min_length": _("Ensure this field has at least {min_length} elements."),
+        "max_length": _("Ensure this field has no more than {max_length} elements."),
     }
 
     def __init__(self, **kwargs):
-        self.child = kwargs.pop('child', copy.deepcopy(self.child))
-        self.allow_empty = kwargs.pop('allow_empty', True)
-        self.max_length = kwargs.pop('max_length', None)
-        self.min_length = kwargs.pop('min_length', None)
+        self.child = kwargs.pop("child", copy.deepcopy(self.child))
+        self.allow_empty = kwargs.pop("allow_empty", True)
+        self.max_length = kwargs.pop("max_length", None)
+        self.min_length = kwargs.pop("min_length", None)
 
-        assert not inspect.isclass(self.child), '`child` has not been instantiated.'
+        assert not inspect.isclass(self.child), "`child` has not been instantiated."
         assert self.child.source is None, (
             "The `source` argument is not meaningful when applied to a `child=` field. "
             "Remove `source=` from the field declaration."
         )
 
         super().__init__(**kwargs)
-        self.child.bind(field_name='', parent=self)
+        self.child.bind(field_name="", parent=self)
         if self.max_length is not None:
-            message = lazy_format(self.error_messages['max_length'], max_length=self.max_length)
+            message = lazy_format(
+                self.error_messages["max_length"], max_length=self.max_length
+            )
             self.validators.append(MaxLengthValidator(self.max_length, message=message))
         if self.min_length is not None:
-            message = lazy_format(self.error_messages['min_length'], min_length=self.min_length)
+            message = lazy_format(
+                self.error_messages["min_length"], min_length=self.min_length
+            )
             self.validators.append(MinLengthValidator(self.min_length, message=message))
 
     def get_value(self, dictionary):
         if self.field_name not in dictionary:
-            if getattr(self.root, 'partial', False):
+            if getattr(self.root, "partial", False):
                 return empty
         # We override the default field access in order to support
         # lists in HTML forms.
@@ -1633,7 +1769,9 @@ class ListField(Field):
             if len(val) > 0:
                 # Support QueryDict lists in HTML input.
                 return val
-            return html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
+            return html.parse_html_list(
+                dictionary, prefix=self.field_name, default=empty
+            )
 
         return dictionary.get(self.field_name, empty)
 
@@ -1643,17 +1781,20 @@ class ListField(Field):
         """
         if html.is_html_input(data):
             data = html.parse_html_list(data, default=[])
-        if isinstance(data, (str, Mapping)) or not hasattr(data, '__iter__'):
-            self.fail('not_a_list', input_type=type(data).__name__)
+        if isinstance(data, (str, Mapping)) or not hasattr(data, "__iter__"):
+            self.fail("not_a_list", input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
-            self.fail('empty')
+            self.fail("empty")
         return self.run_child_validation(data)
 
     def to_representation(self, data):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
-        return [self.child.to_representation(item) if item is not None else None for item in data]
+        return [
+            self.child.to_representation(item) if item is not None else None
+            for item in data
+        ]
 
     def run_child_validation(self, data):
         result = []
@@ -1676,22 +1817,22 @@ class DictField(Field):
     child = _UnvalidatedField()
     initial = {}
     default_error_messages = {
-        'not_a_dict': _('Expected a dictionary of items but got type "{input_type}".'),
-        'empty': _('This dictionary may not be empty.'),
+        "not_a_dict": _('Expected a dictionary of items but got type "{input_type}".'),
+        "empty": _("This dictionary may not be empty."),
     }
 
     def __init__(self, **kwargs):
-        self.child = kwargs.pop('child', copy.deepcopy(self.child))
-        self.allow_empty = kwargs.pop('allow_empty', True)
+        self.child = kwargs.pop("child", copy.deepcopy(self.child))
+        self.allow_empty = kwargs.pop("allow_empty", True)
 
-        assert not inspect.isclass(self.child), '`child` has not been instantiated.'
+        assert not inspect.isclass(self.child), "`child` has not been instantiated."
         assert self.child.source is None, (
             "The `source` argument is not meaningful when applied to a `child=` field. "
             "Remove `source=` from the field declaration."
         )
 
         super().__init__(**kwargs)
-        self.child.bind(field_name='', parent=self)
+        self.child.bind(field_name="", parent=self)
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
@@ -1707,9 +1848,9 @@ class DictField(Field):
         if html.is_html_input(data):
             data = html.parse_html_dict(data)
         if not isinstance(data, dict):
-            self.fail('not_a_dict', input_type=type(data).__name__)
+            self.fail("not_a_dict", input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
-            self.fail('empty')
+            self.fail("empty")
 
         return self.run_child_validation(data)
 
@@ -1748,17 +1889,15 @@ class HStoreField(DictField):
 
 
 class JSONField(Field):
-    default_error_messages = {
-        'invalid': _('Value must be valid JSON.')
-    }
+    default_error_messages = {"invalid": _("Value must be valid JSON.")}
 
     # Workaround for isinstance calls when importing the field isn't possible
     _is_jsonfield = True
 
     def __init__(self, **kwargs):
-        self.binary = kwargs.pop('binary', False)
-        self.encoder = kwargs.pop('encoder', None)
-        self.decoder = kwargs.pop('decoder', None)
+        self.binary = kwargs.pop("binary", False)
+        self.encoder = kwargs.pop("encoder", None)
+        self.decoder = kwargs.pop("decoder", None)
         super().__init__(**kwargs)
 
     def get_value(self, dictionary):
@@ -1770,19 +1909,20 @@ class JSONField(Field):
                     ret = str.__new__(cls, value)
                     ret.is_json_string = True
                     return ret
+
             return JSONString(dictionary[self.field_name])
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
         try:
-            if self.binary or getattr(data, 'is_json_string', False):
+            if self.binary or getattr(data, "is_json_string", False):
                 if isinstance(data, bytes):
                     data = data.decode()
                 return json.loads(data, cls=self.decoder)
             else:
                 json.dumps(data, cls=self.encoder)
         except (TypeError, ValueError):
-            self.fail('invalid')
+            self.fail("invalid")
         return data
 
     def to_representation(self, value):
@@ -1793,6 +1933,7 @@ class JSONField(Field):
 
 
 # Miscellaneous field types...
+
 
 class ReadOnlyField(Field):
     """
@@ -1808,7 +1949,7 @@ class ReadOnlyField(Field):
     """
 
     def __init__(self, **kwargs):
-        kwargs['read_only'] = True
+        kwargs["read_only"] = True
         super().__init__(**kwargs)
 
     def to_representation(self, value):
@@ -1825,8 +1966,8 @@ class HiddenField(Field):
     """
 
     def __init__(self, **kwargs):
-        assert 'default' in kwargs, 'default is a required argument.'
-        kwargs['write_only'] = True
+        assert "default" in kwargs, "default is a required argument."
+        kwargs["write_only"] = True
         super().__init__(**kwargs)
 
     def get_value(self, dictionary):
@@ -1856,14 +1997,14 @@ class SerializerMethodField(Field):
 
     def __init__(self, method_name=None, **kwargs):
         self.method_name = method_name
-        kwargs['source'] = '*'
-        kwargs['read_only'] = True
+        kwargs["source"] = "*"
+        kwargs["read_only"] = True
         super().__init__(**kwargs)
 
     def bind(self, field_name, parent):
         # The method name defaults to `get_{field_name}`.
         if self.method_name is None:
-            self.method_name = 'get_{field_name}'.format(field_name=field_name)
+            self.method_name = "get_{field_name}".format(field_name=field_name)
 
         super().bind(field_name, parent)
 
@@ -1879,20 +2020,22 @@ class ModelField(Field):
     This is used by `ModelSerializer` when dealing with custom model fields,
     that do not have a serializer field to be mapped to.
     """
+
     default_error_messages = {
-        'max_length': _('Ensure this field has no more than {max_length} characters.'),
+        "max_length": _("Ensure this field has no more than {max_length} characters."),
     }
 
     def __init__(self, model_field, **kwargs):
         self.model_field = model_field
         # The `max_length` option is supported by Django's base `Field` class,
         # so we'd better support it here.
-        self.max_length = kwargs.pop('max_length', None)
+        self.max_length = kwargs.pop("max_length", None)
         super().__init__(**kwargs)
         if self.max_length is not None:
-            message = lazy_format(self.error_messages['max_length'], max_length=self.max_length)
-            self.validators.append(
-                MaxLengthValidator(self.max_length, message=message))
+            message = lazy_format(
+                self.error_messages["max_length"], max_length=self.max_length
+            )
+            self.validators.append(MaxLengthValidator(self.max_length, message=message))
 
     def to_internal_value(self, data):
         rel = self.model_field.remote_field

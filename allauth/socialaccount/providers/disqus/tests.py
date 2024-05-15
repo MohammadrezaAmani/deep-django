@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.models import User
-from django.test.utils import override_settings
-
 from allauth.account import app_settings as account_settings
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.tests import OAuth2TestsMixin
 from allauth.tests import MockedResponse, TestCase
+from django.contrib.auth.models import User
+from django.test.utils import override_settings
 
 from .provider import DisqusProvider
 

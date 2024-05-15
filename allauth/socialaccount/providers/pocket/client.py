@@ -1,8 +1,5 @@
 from urllib.parse import urlencode
 
-from django.http import HttpResponseRedirect
-from django.utils.translation import gettext as _
-
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.providers.oauth.client import (
     OAuthClient,
@@ -10,6 +7,8 @@ from allauth.socialaccount.providers.oauth.client import (
     get_token_prefix,
 )
 from allauth.utils import build_absolute_uri
+from django.http import HttpResponseRedirect
+from django.utils.translation import gettext as _
 
 
 class PocketOAuthClient(OAuthClient):

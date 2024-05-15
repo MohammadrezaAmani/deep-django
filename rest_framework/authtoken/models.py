@@ -10,10 +10,13 @@ class Token(models.Model):
     """
     The default authorization token model.
     """
+
     key = models.CharField(_("Key"), max_length=40, primary_key=True)
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, related_name='auth_token',
-        on_delete=models.CASCADE, verbose_name=_("User")
+        settings.AUTH_USER_MODEL,
+        related_name="auth_token",
+        on_delete=models.CASCADE,
+        verbose_name=_("User"),
     )
     created = models.DateTimeField(_("Created"), auto_now_add=True)
 
@@ -23,7 +26,7 @@ class Token(models.Model):
         #
         # Also see corresponding ticket:
         # https://github.com/encode/django-rest-framework/issues/705
-        abstract = 'rest_framework.authtoken' not in settings.INSTALLED_APPS
+        abstract = "rest_framework.authtoken" not in settings.INSTALLED_APPS
         verbose_name = _("Token")
         verbose_name_plural = _("Tokens")
 
@@ -44,12 +47,13 @@ class TokenProxy(Token):
     """
     Proxy mapping pk to user pk for use in admin.
     """
+
     @property
     def pk(self):
         return self.user_id
 
     class Meta:
-        proxy = 'rest_framework.authtoken' in settings.INSTALLED_APPS
-        abstract = 'rest_framework.authtoken' not in settings.INSTALLED_APPS
+        proxy = "rest_framework.authtoken" in settings.INSTALLED_APPS
+        abstract = "rest_framework.authtoken" not in settings.INSTALLED_APPS
         verbose_name = _("Token")
         verbose_name_plural = _("Tokens")

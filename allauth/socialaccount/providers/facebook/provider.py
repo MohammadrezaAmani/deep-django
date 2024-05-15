@@ -1,15 +1,8 @@
 import json
-import requests
 import string
 from urllib.parse import quote
 
-from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.middleware.csrf import get_token
-from django.template.loader import render_to_string
-from django.urls import reverse
-from django.utils.crypto import get_random_string
-from django.utils.html import escapejs
-from django.utils.safestring import mark_safe
+import requests
 
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.adapter import get_adapter
@@ -26,12 +19,17 @@ from allauth.socialaccount.providers.facebook.constants import (
     NONCE_SESSION_KEY,
     PROVIDER_ID,
 )
-from allauth.socialaccount.providers.facebook.views import (
-    FacebookOAuth2Adapter,
-)
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
 from allauth.utils import import_callable
+from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.middleware.csrf import get_token
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils.crypto import get_random_string
+from django.utils.html import escapejs
+from django.utils.safestring import mark_safe
 
 from .locale import get_default_locale_callable
 

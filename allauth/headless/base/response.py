@@ -61,9 +61,7 @@ class BaseAuthenticationResponse(APIResponse):
             if get_account_adapter().is_open_for_signup(request):
                 ret.append({"id": Flow.SIGNUP})
             if allauth_settings.SOCIALACCOUNT_ENABLED:
-                from allauth.headless.socialaccount.response import (
-                    provider_flows,
-                )
+                from allauth.headless.socialaccount.response import provider_flows
 
                 ret.extend(provider_flows(request))
         stage_key = None

@@ -1,3 +1,6 @@
+from allauth.socialaccount.forms import DisconnectForm, SignupForm
+from allauth.socialaccount.internal import flows
+from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect
@@ -5,10 +8,6 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-
-from allauth.socialaccount.forms import DisconnectForm, SignupForm
-from allauth.socialaccount.internal import flows
-from allauth.socialaccount.models import SocialAccount
 
 from ..account import app_settings as account_settings
 from ..account.views import (

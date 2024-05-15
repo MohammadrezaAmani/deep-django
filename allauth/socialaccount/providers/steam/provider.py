@@ -1,14 +1,12 @@
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
-from django.urls import reverse
-from django.utils.http import urlencode
-
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.providers.openid.provider import (
     OpenIDAccount,
     OpenIDProvider,
 )
-
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
+from django.urls import reverse
+from django.utils.http import urlencode
 
 if "allauth.socialaccount.providers.openid" not in settings.INSTALLED_APPS:
     raise ImproperlyConfigured(

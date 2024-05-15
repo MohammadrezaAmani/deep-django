@@ -2,13 +2,12 @@ import hashlib
 import hmac
 from datetime import timedelta
 
-from django.core.cache import cache
-from django.utils import timezone
-
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.models import SocialLogin, SocialToken
 from allauth.socialaccount.providers.base import Provider
 from allauth.socialaccount.providers.facebook.constants import GRAPH_API_URL
+from django.core.cache import cache
+from django.utils import timezone
 
 
 def compute_appsecret_proof(app, token):

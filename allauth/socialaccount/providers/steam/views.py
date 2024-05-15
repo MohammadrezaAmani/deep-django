@@ -12,15 +12,13 @@ Resources:
 * Steam Partner API documentation
     https://partner.steamgames.com/doc/features/auth#website
 """
-from django.urls import reverse
-
 from allauth.socialaccount.providers.openid.views import (
     OpenIDCallbackView,
     OpenIDLoginView,
 )
+from django.urls import reverse
 
 from .provider import SteamOpenIDProvider
-
 
 STEAM_OPENID_URL = "https://steamcommunity.com/openid"
 

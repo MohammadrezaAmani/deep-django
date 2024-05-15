@@ -4,22 +4,20 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('authtoken', '0002_auto_20160226_1747'),
+        ("authtoken", "0002_auto_20160226_1747"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TokenProxy',
-            fields=[
-            ],
+            name="TokenProxy",
+            fields=[],
             options={
-                'verbose_name': 'token',
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "token",
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('authtoken.token',),
+            bases=("authtoken.token",),
         ),
     ]

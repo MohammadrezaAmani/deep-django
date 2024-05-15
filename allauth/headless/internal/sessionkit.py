@@ -1,9 +1,8 @@
 from importlib import import_module
 
-from django.conf import settings
-
 from allauth.headless import app_settings
 from allauth.headless.constants import Client
+from django.conf import settings
 
 
 def session_store(session_key=None):

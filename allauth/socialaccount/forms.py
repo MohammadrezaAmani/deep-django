@@ -1,7 +1,6 @@
-from django import forms
-
 from allauth.account.forms import BaseSignupForm
 from allauth.socialaccount.internal import flows
+from django import forms
 
 from . import app_settings
 from .adapter import get_adapter

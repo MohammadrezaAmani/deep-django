@@ -1,9 +1,8 @@
 from importlib import import_module
 
+from allauth.socialaccount import providers
 from django.urls import include, path
 from django.views.generic.base import RedirectView
-
-from allauth.socialaccount import providers
 
 from . import app_settings
 

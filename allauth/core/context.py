@@ -1,7 +1,6 @@
 from contextlib import contextmanager
 from contextvars import ContextVar
 
-
 _request_var = ContextVar("request", default=None)
 
 

@@ -4,7 +4,6 @@ from django.template.loader import render_to_string
 from django.template.loader_tags import ExtendsNode
 from django.utils.safestring import mark_safe
 
-
 SLOTS_CONTEXT_KEY = "slots_context"
 LAYOUT_CONTEXT_KEY = "layout_context"
 

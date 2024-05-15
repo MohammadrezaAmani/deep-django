@@ -1,10 +1,9 @@
 import importlib
 from collections import OrderedDict
 
+from allauth.utils import import_attribute
 from django.apps import apps
 from django.conf import settings
-
-from allauth.utils import import_attribute
 
 
 class ProviderRegistry(object):

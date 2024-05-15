@@ -1,9 +1,9 @@
 import base64
 from unittest.mock import patch
 
-from django.test.client import Client
-
 import pytest
+
+from django.test.client import Client
 
 
 @pytest.fixture

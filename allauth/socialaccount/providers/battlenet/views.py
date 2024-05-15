@@ -12,8 +12,6 @@ Resources:
 * The Battle.net API forum:
     https://us.battle.net/en/forum/15051532/
 """
-from django.conf import settings
-
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 from allauth.socialaccount.providers.oauth2.views import (
@@ -21,6 +19,7 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2CallbackView,
     OAuth2LoginView,
 )
+from django.conf import settings
 
 
 class Region:

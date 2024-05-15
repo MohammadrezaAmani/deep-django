@@ -1,11 +1,5 @@
 from urllib.parse import parse_qsl, urlparse
 
-from django.core.cache import cache
-from django.core.exceptions import ImproperlyConfigured
-from django.http import Http404
-from django.urls import reverse
-from django.utils.http import urlencode
-
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
@@ -13,6 +7,11 @@ from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.models import SocialApp
 from allauth.socialaccount.providers.saml.provider import SAMLProvider
+from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
+from django.http import Http404
+from django.urls import reverse
+from django.utils.http import urlencode
 
 
 def get_app_or_404(request, organization_slug):

@@ -1,8 +1,7 @@
-from django.forms.fields import Field
-
 from allauth.core.internal.adapter import BaseAdapter
 from allauth.headless import app_settings
 from allauth.utils import import_attribute
+from django.forms.fields import Field
 
 
 class DefaultHeadlessAdapter(BaseAdapter):

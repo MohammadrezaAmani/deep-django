@@ -7,9 +7,6 @@ import time
 from io import BytesIO
 from urllib.parse import quote
 
-from django.core.cache import cache
-from django.utils.http import urlencode
-
 import qrcode
 from qrcode.image.svg import SvgPathImage
 
@@ -17,7 +14,8 @@ from allauth.core import context
 from allauth.mfa import app_settings
 from allauth.mfa.models import Authenticator
 from allauth.mfa.utils import decrypt, encrypt
-
+from django.core.cache import cache
+from django.utils.http import urlencode
 
 SECRET_SESSION_KEY = "mfa.totp.secret"
 

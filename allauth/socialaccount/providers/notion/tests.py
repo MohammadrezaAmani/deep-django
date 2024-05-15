@@ -1,10 +1,9 @@
 from urllib.parse import parse_qs, urlparse
 
-from django.urls import reverse
-from django.utils.http import urlencode
-
 from allauth.socialaccount.tests import OAuth2TestsMixin
 from allauth.tests import MockedResponse, TestCase, mocked_response
+from django.urls import reverse
+from django.utils.http import urlencode
 
 from .provider import NotionProvider
 

@@ -1,7 +1,6 @@
+from allauth.socialaccount.providers.base import Provider, ProviderAccount
 from django.urls import reverse
 from django.utils.http import urlencode
-
-from allauth.socialaccount.providers.base import Provider, ProviderAccount
 
 
 class DraugiemAccount(ProviderAccount):

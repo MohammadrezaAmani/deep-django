@@ -1,12 +1,11 @@
 import base64
 import json
 
-from django.urls import reverse
-
 import pytest
 from pytest_django.asserts import assertTemplateUsed
 
 from allauth.socialaccount.models import SocialAccount
+from django.urls import reverse
 
 
 @pytest.fixture

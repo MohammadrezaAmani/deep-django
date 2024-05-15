@@ -1,9 +1,8 @@
-from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash
-
 from allauth.account import app_settings, signals
 from allauth.account.adapter import get_adapter
 from allauth.account.internal.flows.logout import logout
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 
 
 def change_password(user, password):

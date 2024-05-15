@@ -1,6 +1,5 @@
-from django.contrib import admin
-
 from allauth.usersessions.models import UserSession
+from django.contrib import admin
 
 
 @admin.register(UserSession)

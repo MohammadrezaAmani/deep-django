@@ -5,11 +5,6 @@ import hmac
 import json
 import time
 
-from django.shortcuts import render
-from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.decorators.csrf import csrf_exempt
-
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.helpers import (
     complete_social_login,
@@ -17,6 +12,10 @@ from allauth.socialaccount.helpers import (
 )
 from allauth.socialaccount.providers.base.views import BaseLoginView
 from allauth.socialaccount.providers.telegram.provider import TelegramProvider
+from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 
 
 class LoginView(BaseLoginView):

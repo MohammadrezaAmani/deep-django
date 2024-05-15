@@ -22,22 +22,22 @@ from inspect import getmembers
 from django.urls import NoReverseMatch
 from django.utils.decorators import classonlymethod
 from django.views.decorators.csrf import csrf_exempt
-
 from rest_framework import generics, mixins, views
 from rest_framework.decorators import MethodMapper
 from rest_framework.reverse import reverse
 
 
 def _is_extra_action(attr):
-    return hasattr(attr, 'mapping') and isinstance(attr.mapping, MethodMapper)
+    return hasattr(attr, "mapping") and isinstance(attr.mapping, MethodMapper)
 
 
 def _check_attr_name(func, name):
     assert func.__name__ == name, (
-        'Expected function (`{func.__name__}`) to match its attribute name '
-        '(`{name}`). If using a decorator, ensure the inner function is '
-        'decorated with `functools.wraps`, or that `{func.__name__}.__name__` '
-        'is otherwise set to `{name}`.').format(func=func, name=name)
+        "Expected function (`{func.__name__}`) to match its attribute name "
+        "(`{name}`). If using a decorator, ensure the inner function is "
+        "decorated with `functools.wraps`, or that `{func.__name__}.__name__` "
+        "is otherwise set to `{name}`."
+    ).format(func=func, name=name)
     return func
 
 
@@ -80,30 +80,36 @@ class ViewSetMixin:
 
         # actions must not be empty
         if not actions:
-            raise TypeError("The `actions` argument must be provided when "
-                            "calling `.as_view()` on a ViewSet. For example "
-                            "`.as_view({'get': 'list'})`")
+            raise TypeError(
+                "The `actions` argument must be provided when "
+                "calling `.as_view()` on a ViewSet. For example "
+                "`.as_view({'get': 'list'})`"
+            )
 
         # sanitize keyword arguments
         for key in initkwargs:
             if key in cls.http_method_names:
-                raise TypeError("You tried to pass in the %s method name as a "
-                                "keyword argument to %s(). Don't do that."
-                                % (key, cls.__name__))
+                raise TypeError(
+                    "You tried to pass in the %s method name as a "
+                    "keyword argument to %s(). Don't do that." % (key, cls.__name__)
+                )
             if not hasattr(cls, key):
-                raise TypeError("%s() received an invalid keyword %r" % (
-                    cls.__name__, key))
+                raise TypeError(
+                    "%s() received an invalid keyword %r" % (cls.__name__, key)
+                )
 
         # name and suffix are mutually exclusive
-        if 'name' in initkwargs and 'suffix' in initkwargs:
-            raise TypeError("%s() received both `name` and `suffix`, which are "
-                            "mutually exclusive arguments." % (cls.__name__))
+        if "name" in initkwargs and "suffix" in initkwargs:
+            raise TypeError(
+                "%s() received both `name` and `suffix`, which are "
+                "mutually exclusive arguments." % (cls.__name__)
+            )
 
         def view(request, *args, **kwargs):
             self = cls(**initkwargs)
 
-            if 'get' in actions and 'head' not in actions:
-                actions['head'] = actions['get']
+            if "get" in actions and "head" not in actions:
+                actions["head"] = actions["get"]
 
             # We also store the mapping of request methods to actions,
             # so that we can later set the action attribute.
@@ -144,11 +150,11 @@ class ViewSetMixin:
         """
         request = super().initialize_request(request, *args, **kwargs)
         method = request.method.lower()
-        if method == 'options':
+        if method == "options":
             # This is a special case as we always provide handling for the
             # options method in the base `View` class.
             # Unlike the other explicitly defined actions, 'metadata' is implicit.
-            self.action = 'metadata'
+            self.action = "metadata"
         else:
             self.action = self.action_map.get(method)
         return request
@@ -157,13 +163,13 @@ class ViewSetMixin:
         """
         Reverse the action for the given `url_name`.
         """
-        url_name = '%s-%s' % (self.basename, url_name)
+        url_name = "%s-%s" % (self.basename, url_name)
         namespace = None
         if self.request and self.request.resolver_match:
             namespace = self.request.resolver_match.namespace
         if namespace:
-            url_name = namespace + ':' + url_name
-        kwargs.setdefault('request', self.request)
+            url_name = namespace + ":" + url_name
+        kwargs.setdefault("request", self.request)
 
         return reverse(url_name, *args, **kwargs)
 
@@ -172,9 +178,10 @@ class ViewSetMixin:
         """
         Get the methods that are marked as an extra ViewSet `@action`.
         """
-        return [_check_attr_name(method, name)
-                for name, method
-                in getmembers(cls, _is_extra_action)]
+        return [
+            _check_attr_name(method, name)
+            for name, method in getmembers(cls, _is_extra_action)
+        ]
 
     def get_extra_action_url_map(self):
         """
@@ -190,16 +197,17 @@ class ViewSetMixin:
 
         # filter for the relevant extra actions
         actions = [
-            action for action in self.get_extra_actions()
+            action
+            for action in self.get_extra_actions()
             if action.detail == self.detail
         ]
 
         for action in actions:
             try:
-                url_name = '%s-%s' % (self.basename, action.url_name)
+                url_name = "%s-%s" % (self.basename, action.url_name)
                 namespace = self.request.resolver_match.namespace
                 if namespace:
-                    url_name = '%s:%s' % (namespace, url_name)
+                    url_name = "%s:%s" % (namespace, url_name)
 
                 url = reverse(url_name, self.args, self.kwargs, request=self.request)
                 view = self.__class__(**action.kwargs)
@@ -214,6 +222,7 @@ class ViewSet(ViewSetMixin, views.APIView):
     """
     The base ViewSet class does not provide any actions by default.
     """
+
     pass
 
 
@@ -223,26 +232,31 @@ class GenericViewSet(ViewSetMixin, generics.GenericAPIView):
     but does include the base set of generic view behavior, such as
     the `get_object` and `get_queryset` methods.
     """
+
     pass
 
 
-class ReadOnlyModelViewSet(mixins.RetrieveModelMixin,
-                           mixins.ListModelMixin,
-                           GenericViewSet):
+class ReadOnlyModelViewSet(
+    mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet
+):
     """
     A viewset that provides default `list()` and `retrieve()` actions.
     """
+
     pass
 
 
-class ModelViewSet(mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.UpdateModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   GenericViewSet):
+class ModelViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet,
+):
     """
     A viewset that provides default `create()`, `retrieve()`, `update()`,
     `partial_update()`, `destroy()` and `list()` actions.
     """
+
     pass

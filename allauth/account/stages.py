@@ -100,10 +100,7 @@ class EmailVerificationStage(LoginStage):
     key = "verify_email"
 
     def handle(self):
-        from allauth.account.utils import (
-            has_verified_email,
-            send_email_confirmation,
-        )
+        from allauth.account.utils import has_verified_email, send_email_confirmation
 
         response, cont = None, True
         login = self.login

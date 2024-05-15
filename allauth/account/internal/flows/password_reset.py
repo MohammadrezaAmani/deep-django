@@ -1,12 +1,11 @@
 from urllib.parse import quote
 
-from django.contrib import messages
-from django.urls import reverse
-
 from allauth.account import signals
 from allauth.account.adapter import get_adapter
 from allauth.core.internal.httpkit import get_frontend_url
 from allauth.utils import build_absolute_uri
+from django.contrib import messages
+from django.urls import reverse
 
 
 def reset_password(user, password):

@@ -1,8 +1,3 @@
-from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.core.exceptions import ImproperlyConfigured
-from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect
-from django.utils.html import format_html
-
 from allauth.account import app_settings
 from allauth.account.adapter import get_adapter
 from allauth.account.internal import flows
@@ -13,6 +8,10 @@ from allauth.account.utils import (
 )
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.utils import get_request_param
+from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.core.exceptions import ImproperlyConfigured
+from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect
+from django.utils.html import format_html
 
 
 def _ajax_response(request, response, form=None, data=None):

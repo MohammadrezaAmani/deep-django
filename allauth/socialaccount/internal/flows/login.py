@@ -1,5 +1,3 @@
-from django.http import HttpResponseRedirect
-
 from allauth.account import authentication
 from allauth.account.adapter import get_adapter as get_account_adapter
 from allauth.account.utils import perform_login
@@ -13,6 +11,7 @@ from allauth.socialaccount.internal.flows.signup import (
 )
 from allauth.socialaccount.models import SocialLogin
 from allauth.socialaccount.providers.base import AuthProcess
+from django.http import HttpResponseRedirect
 
 
 def _login(request, sociallogin):

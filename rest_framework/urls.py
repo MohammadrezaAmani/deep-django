@@ -14,8 +14,12 @@ You should make sure your authentication settings include `SessionAuthentication
 from django.contrib.auth import views
 from django.urls import path
 
-app_name = 'rest_framework'
+app_name = "rest_framework"
 urlpatterns = [
-    path('login/', views.LoginView.as_view(template_name='rest_framework/login.html'), name='login'),
-    path('logout/', views.LogoutView.as_view(), name='logout'),
+    path(
+        "login/",
+        views.LoginView.as_view(template_name="rest_framework/login.html"),
+        name="login",
+    ),
+    path("logout/", views.LogoutView.as_view(), name="logout"),
 ]

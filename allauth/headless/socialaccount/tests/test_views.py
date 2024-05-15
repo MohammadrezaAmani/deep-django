@@ -1,9 +1,8 @@
-from django.urls import reverse
-
 from pytest_django.asserts import assertTemplateUsed
 
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.base.constants import AuthProcess
+from django.urls import reverse
 
 
 def test_bad_redirect(client, headless_reverse, db, settings):

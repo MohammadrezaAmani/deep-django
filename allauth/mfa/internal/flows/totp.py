@@ -1,10 +1,9 @@
-from django.contrib import messages
-
 from allauth.account.adapter import get_adapter as get_account_adapter
 from allauth.account.reauthentication import raise_if_reauthentication_required
 from allauth.mfa import app_settings, signals, totp
 from allauth.mfa.models import Authenticator
 from allauth.mfa.recovery_codes import RecoveryCodes
+from django.contrib import messages
 
 
 def activate_totp(request, form):

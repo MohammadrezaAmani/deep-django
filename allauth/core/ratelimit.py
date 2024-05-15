@@ -2,14 +2,12 @@ import hashlib
 import time
 from collections import namedtuple
 
+from allauth import app_settings
+from allauth.utils import import_callable
 from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import render
-
-from allauth import app_settings
-from allauth.utils import import_callable
-
 
 Rate = namedtuple("Rate", "amount duration per")
 

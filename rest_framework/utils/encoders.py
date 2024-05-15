@@ -12,7 +12,6 @@ from django.db.models.query import QuerySet
 from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.functional import Promise
-
 from rest_framework.compat import coreapi
 
 
@@ -21,6 +20,7 @@ class JSONEncoder(json.JSONEncoder):
     JSONEncoder subclass that knows how to encode date/time/timedelta,
     decimal types, generators and other basic python objects.
     """
+
     def default(self, obj):
         # For Date Time string spec, see ECMA 262
         # https://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
@@ -28,8 +28,8 @@ class JSONEncoder(json.JSONEncoder):
             return force_str(obj)
         elif isinstance(obj, datetime.datetime):
             representation = obj.isoformat()
-            if representation.endswith('+00:00'):
-                representation = representation[:-6] + 'Z'
+            if representation.endswith("+00:00"):
+                representation = representation[:-6] + "Z"
             return representation
         elif isinstance(obj, datetime.date):
             return obj.isoformat()
@@ -50,19 +50,21 @@ class JSONEncoder(json.JSONEncoder):
         elif isinstance(obj, bytes):
             # Best-effort for binary blobs. See #4187.
             return obj.decode()
-        elif hasattr(obj, 'tolist'):
+        elif hasattr(obj, "tolist"):
             # Numpy arrays and array scalars.
             return obj.tolist()
-        elif (coreapi is not None) and isinstance(obj, (coreapi.Document, coreapi.Error)):
+        elif (coreapi is not None) and isinstance(
+            obj, (coreapi.Document, coreapi.Error)
+        ):
             raise RuntimeError(
-                'Cannot return a coreapi object from a JSON view. '
-                'You should be using a schema renderer instead for this view.'
+                "Cannot return a coreapi object from a JSON view. "
+                "You should be using a schema renderer instead for this view."
             )
-        elif hasattr(obj, '__getitem__'):
-            cls = (list if isinstance(obj, (list, tuple)) else dict)
+        elif hasattr(obj, "__getitem__"):
+            cls = list if isinstance(obj, (list, tuple)) else dict
             with contextlib.suppress(Exception):
                 return cls(obj)
-        elif hasattr(obj, '__iter__'):
+        elif hasattr(obj, "__iter__"):
             return tuple(item for item in obj)
         return super().default(obj)
 
@@ -72,7 +74,8 @@ class CustomScalar:
     CustomScalar that knows how to encode timedelta that renderer
     can understand.
     """
+
     @classmethod
     def represent_timedelta(cls, dumper, data):
         value = str(data.total_seconds())
-        return dumper.represent_scalar('tag:yaml.org,2002:str', value)
+        return dumper.represent_scalar("tag:yaml.org,2002:str", value)

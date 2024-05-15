@@ -1,11 +1,10 @@
 from unittest.mock import Mock
 
-from django.contrib.auth.models import AnonymousUser
-
 import pytest
 
 from allauth.usersessions.middleware import UserSessionsMiddleware
 from allauth.usersessions.models import UserSession
+from django.contrib.auth.models import AnonymousUser
 
 
 def test_mw_without_request_user(rf, db, settings):

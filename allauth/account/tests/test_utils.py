@@ -1,6 +1,17 @@
 import uuid
 from unittest.mock import patch
 
+import allauth.app_settings
+from allauth.account.adapter import get_adapter
+from allauth.account.models import EmailAddress
+from allauth.account.utils import (
+    filter_users_by_username,
+    url_str_to_user_pk,
+    user_pk_to_url_str,
+    user_username,
+)
+from allauth.core import context
+from allauth.tests import TestCase
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.messages.api import get_messages
@@ -13,20 +24,7 @@ from django.test.client import RequestFactory
 from django.test.utils import override_settings
 from django.urls import reverse
 
-import allauth.app_settings
-from allauth.account.adapter import get_adapter
-from allauth.account.models import EmailAddress
-from allauth.account.utils import (
-    filter_users_by_username,
-    url_str_to_user_pk,
-    user_pk_to_url_str,
-    user_username,
-)
-from allauth.core import context
-from allauth.tests import TestCase
-
 from .test_models import UUIDUser
-
 
 test_username_validators = [
     validators.RegexValidator(regex=r"^[a-c]+$", message="not abc", flags=0)

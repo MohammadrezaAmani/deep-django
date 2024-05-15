@@ -15,7 +15,6 @@ from django.db.models import Q
 from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
-
 from rest_framework import RemovedInDRF317Warning
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.exceptions import NotFound
@@ -84,10 +83,7 @@ def _get_displayed_page_numbers(current, final):
         included.add(final - 2)
 
     # Now sort the page numbers and drop anything outside the limits.
-    included = [
-        idx for idx in sorted(included)
-        if 0 < idx <= final
-    ]
+    included = [idx for idx in sorted(included) if 0 < idx <= final]
 
     # Finally insert any `...` breaks
     if current > 4:
@@ -111,7 +107,7 @@ def _get_page_links(page_numbers, current, url_func):
                 url=url_func(page_number),
                 number=page_number,
                 is_active=(page_number == current),
-                is_break=False
+                is_break=False,
             )
         page_links.append(page_link)
     return page_links
@@ -122,14 +118,15 @@ def _reverse_ordering(ordering_tuple):
     Given an order_by tuple such as `('-created', 'uuid')` reverse the
     ordering and return a new tuple, eg. `('created', '-uuid')`.
     """
+
     def invert(x):
-        return x[1:] if x.startswith('-') else '-' + x
+        return x[1:] if x.startswith("-") else "-" + x
 
     return tuple([invert(item) for item in ordering_tuple])
 
 
-Cursor = namedtuple('Cursor', ['offset', 'reverse', 'position'])
-PageLink = namedtuple('PageLink', ['url', 'number', 'is_active', 'is_break'])
+Cursor = namedtuple("Cursor", ["offset", "reverse", "position"])
+PageLink = namedtuple("PageLink", ["url", "number", "is_active", "is_break"])
 
 PAGE_BREAK = PageLink(url=None, number=None, is_active=False, is_break=True)
 
@@ -138,24 +135,31 @@ class BasePagination:
     display_page_controls = False
 
     def paginate_queryset(self, queryset, request, view=None):  # pragma: no cover
-        raise NotImplementedError('paginate_queryset() must be implemented.')
+        raise NotImplementedError("paginate_queryset() must be implemented.")
 
     def get_paginated_response(self, data):  # pragma: no cover
-        raise NotImplementedError('get_paginated_response() must be implemented.')
+        raise NotImplementedError("get_paginated_response() must be implemented.")
 
     def get_paginated_response_schema(self, schema):
         return schema
 
     def to_html(self):  # pragma: no cover
-        raise NotImplementedError('to_html() must be implemented to display page controls.')
+        raise NotImplementedError(
+            "to_html() must be implemented to display page controls."
+        )
 
     def get_results(self, data):
-        return data['results']
+        return data["results"]
 
     def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        assert (
+            coreapi is not None
+        ), "coreapi must be installed to use `get_schema_fields()`"
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
+            warnings.warn(
+                "CoreAPI compatibility is deprecated and will be removed in DRF 3.17",
+                RemovedInDRF317Warning,
+            )
         return []
 
     def get_schema_operation_parameters(self, view):
@@ -170,6 +174,7 @@ class PageNumberPagination(BasePagination):
     http://api.example.org/accounts/?page=4
     http://api.example.org/accounts/?page=4&page_size=100
     """
+
     # The default page size.
     # Defaults to `None`, meaning pagination is disabled.
     page_size = api_settings.PAGE_SIZE
@@ -177,23 +182,23 @@ class PageNumberPagination(BasePagination):
     django_paginator_class = DjangoPaginator
 
     # Client can control the page using this query parameter.
-    page_query_param = 'page'
-    page_query_description = _('A page number within the paginated result set.')
+    page_query_param = "page"
+    page_query_description = _("A page number within the paginated result set.")
 
     # Client can control the page size using this query parameter.
     # Default is 'None'. Set to eg 'page_size' to enable usage.
     page_size_query_param = None
-    page_size_query_description = _('Number of results to return per page.')
+    page_size_query_description = _("Number of results to return per page.")
 
     # Set to an integer to limit the maximum page size the client may request.
     # Only relevant if 'page_size_query_param' has also been set.
     max_page_size = None
 
-    last_page_strings = ('last',)
+    last_page_strings = ("last",)
 
-    template = 'rest_framework/pagination/numbers.html'
+    template = "rest_framework/pagination/numbers.html"
 
-    invalid_page_message = _('Invalid page.')
+    invalid_page_message = _("Invalid page.")
 
     def paginate_queryset(self, queryset, request, view=None):
         """
@@ -229,37 +234,41 @@ class PageNumberPagination(BasePagination):
         return page_number
 
     def get_paginated_response(self, data):
-        return Response({
-            'count': self.page.paginator.count,
-            'next': self.get_next_link(),
-            'previous': self.get_previous_link(),
-            'results': data,
-        })
+        return Response(
+            {
+                "count": self.page.paginator.count,
+                "next": self.get_next_link(),
+                "previous": self.get_previous_link(),
+                "results": data,
+            }
+        )
 
     def get_paginated_response_schema(self, schema):
         return {
-            'type': 'object',
-            'required': ['count', 'results'],
-            'properties': {
-                'count': {
-                    'type': 'integer',
-                    'example': 123,
+            "type": "object",
+            "required": ["count", "results"],
+            "properties": {
+                "count": {
+                    "type": "integer",
+                    "example": 123,
                 },
-                'next': {
-                    'type': 'string',
-                    'nullable': True,
-                    'format': 'uri',
-                    'example': 'http://api.example.org/accounts/?{page_query_param}=4'.format(
-                        page_query_param=self.page_query_param)
+                "next": {
+                    "type": "string",
+                    "nullable": True,
+                    "format": "uri",
+                    "example": "http://api.example.org/accounts/?{page_query_param}=4".format(
+                        page_query_param=self.page_query_param
+                    ),
                 },
-                'previous': {
-                    'type': 'string',
-                    'nullable': True,
-                    'format': 'uri',
-                    'example': 'http://api.example.org/accounts/?{page_query_param}=2'.format(
-                        page_query_param=self.page_query_param)
+                "previous": {
+                    "type": "string",
+                    "nullable": True,
+                    "format": "uri",
+                    "example": "http://api.example.org/accounts/?{page_query_param}=2".format(
+                        page_query_param=self.page_query_param
+                    ),
                 },
-                'results': schema,
+                "results": schema,
             },
         }
 
@@ -269,7 +278,7 @@ class PageNumberPagination(BasePagination):
                 return _positive_int(
                     request.query_params[self.page_size_query_param],
                     strict=True,
-                    cutoff=self.max_page_size
+                    cutoff=self.max_page_size,
                 )
         return self.page_size
 
@@ -304,9 +313,9 @@ class PageNumberPagination(BasePagination):
         page_links = _get_page_links(page_numbers, current, page_number_to_url)
 
         return {
-            'previous_url': self.get_previous_link(),
-            'next_url': self.get_next_link(),
-            'page_links': page_links
+            "previous_url": self.get_previous_link(),
+            "next_url": self.get_next_link(),
+            "page_links": page_links,
         }
 
     def to_html(self):
@@ -315,19 +324,25 @@ class PageNumberPagination(BasePagination):
         return template.render(context)
 
     def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        assert (
+            coreapi is not None
+        ), "coreapi must be installed to use `get_schema_fields()`"
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+            warnings.warn(
+                "CoreAPI compatibility is deprecated and will be removed in DRF 3.17",
+                RemovedInDRF317Warning,
+            )
+        assert (
+            coreschema is not None
+        ), "coreschema must be installed to use `get_schema_fields()`"
         fields = [
             coreapi.Field(
                 name=self.page_query_param,
                 required=False,
-                location='query',
+                location="query",
                 schema=coreschema.Integer(
-                    title='Page',
-                    description=force_str(self.page_query_description)
-                )
+                    title="Page", description=force_str(self.page_query_description)
+                ),
             )
         ]
         if self.page_size_query_param is not None:
@@ -335,11 +350,11 @@ class PageNumberPagination(BasePagination):
                 coreapi.Field(
                     name=self.page_size_query_param,
                     required=False,
-                    location='query',
+                    location="query",
                     schema=coreschema.Integer(
-                        title='Page size',
-                        description=force_str(self.page_size_query_description)
-                    )
+                        title="Page size",
+                        description=force_str(self.page_size_query_description),
+                    ),
                 )
             )
         return fields
@@ -347,24 +362,24 @@ class PageNumberPagination(BasePagination):
     def get_schema_operation_parameters(self, view):
         parameters = [
             {
-                'name': self.page_query_param,
-                'required': False,
-                'in': 'query',
-                'description': force_str(self.page_query_description),
-                'schema': {
-                    'type': 'integer',
+                "name": self.page_query_param,
+                "required": False,
+                "in": "query",
+                "description": force_str(self.page_query_description),
+                "schema": {
+                    "type": "integer",
                 },
             },
         ]
         if self.page_size_query_param is not None:
             parameters.append(
                 {
-                    'name': self.page_size_query_param,
-                    'required': False,
-                    'in': 'query',
-                    'description': force_str(self.page_size_query_description),
-                    'schema': {
-                        'type': 'integer',
+                    "name": self.page_size_query_param,
+                    "required": False,
+                    "in": "query",
+                    "description": force_str(self.page_size_query_description),
+                    "schema": {
+                        "type": "integer",
                     },
                 },
             )
@@ -378,13 +393,14 @@ class LimitOffsetPagination(BasePagination):
     http://api.example.org/accounts/?limit=100
     http://api.example.org/accounts/?offset=400&limit=100
     """
+
     default_limit = api_settings.PAGE_SIZE
-    limit_query_param = 'limit'
-    limit_query_description = _('Number of results to return per page.')
-    offset_query_param = 'offset'
-    offset_query_description = _('The initial index from which to return the results.')
+    limit_query_param = "limit"
+    limit_query_description = _("Number of results to return per page.")
+    offset_query_param = "offset"
+    offset_query_description = _("The initial index from which to return the results.")
     max_limit = None
-    template = 'rest_framework/pagination/numbers.html'
+    template = "rest_framework/pagination/numbers.html"
 
     def paginate_queryset(self, queryset, request, view=None):
         self.request = request
@@ -399,40 +415,46 @@ class LimitOffsetPagination(BasePagination):
 
         if self.count == 0 or self.offset > self.count:
             return []
-        return list(queryset[self.offset:self.offset + self.limit])
+        return list(queryset[self.offset : self.offset + self.limit])
 
     def get_paginated_response(self, data):
-        return Response({
-            'count': self.count,
-            'next': self.get_next_link(),
-            'previous': self.get_previous_link(),
-            'results': data
-        })
+        return Response(
+            {
+                "count": self.count,
+                "next": self.get_next_link(),
+                "previous": self.get_previous_link(),
+                "results": data,
+            }
+        )
 
     def get_paginated_response_schema(self, schema):
         return {
-            'type': 'object',
-            'required': ['count', 'results'],
-            'properties': {
-                'count': {
-                    'type': 'integer',
-                    'example': 123,
+            "type": "object",
+            "required": ["count", "results"],
+            "properties": {
+                "count": {
+                    "type": "integer",
+                    "example": 123,
                 },
-                'next': {
-                    'type': 'string',
-                    'nullable': True,
-                    'format': 'uri',
-                    'example': 'http://api.example.org/accounts/?{offset_param}=400&{limit_param}=100'.format(
-                        offset_param=self.offset_query_param, limit_param=self.limit_query_param),
+                "next": {
+                    "type": "string",
+                    "nullable": True,
+                    "format": "uri",
+                    "example": "http://api.example.org/accounts/?{offset_param}=400&{limit_param}=100".format(
+                        offset_param=self.offset_query_param,
+                        limit_param=self.limit_query_param,
+                    ),
                 },
-                'previous': {
-                    'type': 'string',
-                    'nullable': True,
-                    'format': 'uri',
-                    'example': 'http://api.example.org/accounts/?{offset_param}=200&{limit_param}=100'.format(
-                        offset_param=self.offset_query_param, limit_param=self.limit_query_param),
+                "previous": {
+                    "type": "string",
+                    "nullable": True,
+                    "format": "uri",
+                    "example": "http://api.example.org/accounts/?{offset_param}=200&{limit_param}=100".format(
+                        offset_param=self.offset_query_param,
+                        limit_param=self.limit_query_param,
+                    ),
                 },
-                'results': schema,
+                "results": schema,
             },
         }
 
@@ -442,7 +464,7 @@ class LimitOffsetPagination(BasePagination):
                 return _positive_int(
                     request.query_params[self.limit_query_param],
                     strict=True,
-                    cutoff=self.max_limit
+                    cutoff=self.max_limit,
                 )
         return self.default_limit
 
@@ -488,10 +510,9 @@ class LimitOffsetPagination(BasePagination):
             # plus the number of pages up to the current offset.
             # When offset is not strictly divisible by the limit then we may
             # end up introducing an extra page as an artifact.
-            final = (
-                _divide_with_ceil(self.count - self.offset, self.limit) +
-                _divide_with_ceil(self.offset, self.limit)
-            )
+            final = _divide_with_ceil(
+                self.count - self.offset, self.limit
+            ) + _divide_with_ceil(self.offset, self.limit)
 
             final = max(final, 1)
         else:
@@ -512,9 +533,9 @@ class LimitOffsetPagination(BasePagination):
         page_links = _get_page_links(page_numbers, current, page_number_to_url)
 
         return {
-            'previous_url': self.get_previous_link(),
-            'next_url': self.get_next_link(),
-            'page_links': page_links
+            "previous_url": self.get_previous_link(),
+            "next_url": self.get_next_link(),
+            "page_links": page_links,
         }
 
     def to_html(self):
@@ -532,49 +553,54 @@ class LimitOffsetPagination(BasePagination):
             return len(queryset)
 
     def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        assert (
+            coreapi is not None
+        ), "coreapi must be installed to use `get_schema_fields()`"
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+            warnings.warn(
+                "CoreAPI compatibility is deprecated and will be removed in DRF 3.17",
+                RemovedInDRF317Warning,
+            )
+        assert (
+            coreschema is not None
+        ), "coreschema must be installed to use `get_schema_fields()`"
         return [
             coreapi.Field(
                 name=self.limit_query_param,
                 required=False,
-                location='query',
+                location="query",
                 schema=coreschema.Integer(
-                    title='Limit',
-                    description=force_str(self.limit_query_description)
-                )
+                    title="Limit", description=force_str(self.limit_query_description)
+                ),
             ),
             coreapi.Field(
                 name=self.offset_query_param,
                 required=False,
-                location='query',
+                location="query",
                 schema=coreschema.Integer(
-                    title='Offset',
-                    description=force_str(self.offset_query_description)
-                )
-            )
+                    title="Offset", description=force_str(self.offset_query_description)
+                ),
+            ),
         ]
 
     def get_schema_operation_parameters(self, view):
         parameters = [
             {
-                'name': self.limit_query_param,
-                'required': False,
-                'in': 'query',
-                'description': force_str(self.limit_query_description),
-                'schema': {
-                    'type': 'integer',
+                "name": self.limit_query_param,
+                "required": False,
+                "in": "query",
+                "description": force_str(self.limit_query_description),
+                "schema": {
+                    "type": "integer",
                 },
             },
             {
-                'name': self.offset_query_param,
-                'required': False,
-                'in': 'query',
-                'description': force_str(self.offset_query_description),
-                'schema': {
-                    'type': 'integer',
+                "name": self.offset_query_param,
+                "required": False,
+                "in": "query",
+                "description": force_str(self.offset_query_description),
+                "schema": {
+                    "type": "integer",
                 },
             },
         ]
@@ -587,17 +613,18 @@ class CursorPagination(BasePagination):
     For an overview of the position/offset style we use, see this post:
     https://cra.mr/2011/03/08/building-cursors-for-the-disqus-api
     """
-    cursor_query_param = 'cursor'
-    cursor_query_description = _('The pagination cursor value.')
+
+    cursor_query_param = "cursor"
+    cursor_query_description = _("The pagination cursor value.")
     page_size = api_settings.PAGE_SIZE
-    invalid_cursor_message = _('Invalid cursor')
-    ordering = '-created'
-    template = 'rest_framework/pagination/previous_and_next.html'
+    invalid_cursor_message = _("Invalid cursor")
+    ordering = "-created"
+    template = "rest_framework/pagination/previous_and_next.html"
 
     # Client can control the page size using this query parameter.
     # Default is 'None'. Set to eg 'page_size' to enable usage.
     page_size_query_param = None
-    page_size_query_description = _('Number of results to return per page.')
+    page_size_query_description = _("Number of results to return per page.")
 
     # Set to an integer to limit the maximum page size the client may request.
     # Only relevant if 'page_size_query_param' has also been set.
@@ -631,34 +658,36 @@ class CursorPagination(BasePagination):
             queryset = queryset.order_by(*self.ordering)
 
         # If we have a cursor with a fixed position then filter by that.
-        if str(current_position) != 'None':
+        if str(current_position) != "None":
             order = self.ordering[0]
-            is_reversed = order.startswith('-')
-            order_attr = order.lstrip('-')
+            is_reversed = order.startswith("-")
+            order_attr = order.lstrip("-")
 
             # Test for: (cursor reversed) XOR (queryset reversed)
             if self.cursor.reverse != is_reversed:
-                kwargs = {order_attr + '__lt': current_position}
+                kwargs = {order_attr + "__lt": current_position}
             else:
-                kwargs = {order_attr + '__gt': current_position}
+                kwargs = {order_attr + "__gt": current_position}
 
             filter_query = Q(**kwargs)
             # If some records contain a null for the ordering field, don't lose them.
             # When reverse ordering, nulls will come last and need to be included.
             if (reverse and not is_reversed) or is_reversed:
-                filter_query |= Q(**{order_attr + '__isnull': True})
+                filter_query |= Q(**{order_attr + "__isnull": True})
             queryset = queryset.filter(filter_query)
 
         # If we have an offset cursor then offset the entire page by that amount.
         # We also always fetch an extra item in order to determine if there is a
         # page following on from this one.
-        results = list(queryset[offset:offset + self.page_size + 1])
-        self.page = list(results[:self.page_size])
+        results = list(queryset[offset : offset + self.page_size + 1])
+        self.page = list(results[: self.page_size])
 
         # Determine the position of the final item following the page.
         if len(results) > len(self.page):
             has_following_position = True
-            following_position = self._get_position_from_instance(results[-1], self.ordering)
+            following_position = self._get_position_from_instance(
+                results[-1], self.ordering
+            )
         else:
             has_following_position = False
             following_position = None
@@ -697,7 +726,7 @@ class CursorPagination(BasePagination):
                 return _positive_int(
                     request.query_params[self.page_size_query_param],
                     strict=True,
-                    cutoff=self.max_page_size
+                    cutoff=self.max_page_size,
                 )
         return self.page_size
 
@@ -705,7 +734,12 @@ class CursorPagination(BasePagination):
         if not self.has_next:
             return None
 
-        if self.page and self.cursor and self.cursor.reverse and self.cursor.offset != 0:
+        if (
+            self.page
+            and self.cursor
+            and self.cursor.reverse
+            and self.cursor.offset != 0
+        ):
             # If we're reversing direction and we have an offset cursor
             # then we cannot use the first position we find as a marker.
             compare = self._get_position_from_instance(self.page[-1], self.ordering)
@@ -758,7 +792,12 @@ class CursorPagination(BasePagination):
         if not self.has_previous:
             return None
 
-        if self.page and self.cursor and not self.cursor.reverse and self.cursor.offset != 0:
+        if (
+            self.page
+            and self.cursor
+            and not self.cursor.reverse
+            and self.cursor.offset != 0
+        ):
             # If we're reversing direction and we have an offset cursor
             # then we cannot use the first position we find as a marker.
             compare = self._get_position_from_instance(self.page[0], self.ordering)
@@ -816,8 +855,9 @@ class CursorPagination(BasePagination):
         ordering = self.ordering
 
         ordering_filters = [
-            filter_cls for filter_cls in getattr(view, 'filter_backends', [])
-            if hasattr(filter_cls, 'get_ordering')
+            filter_cls
+            for filter_cls in getattr(view, "filter_backends", [])
+            if hasattr(filter_cls, "get_ordering")
         ]
 
         if ordering_filters:
@@ -830,19 +870,19 @@ class CursorPagination(BasePagination):
                 ordering = ordering_from_filter
 
         assert ordering is not None, (
-            'Using cursor pagination, but no ordering attribute was declared '
-            'on the pagination class.'
+            "Using cursor pagination, but no ordering attribute was declared "
+            "on the pagination class."
         )
-        assert '__' not in ordering, (
-            'Cursor pagination does not support double underscore lookups '
-            'for orderings. Orderings should be an unchanging, unique or '
+        assert "__" not in ordering, (
+            "Cursor pagination does not support double underscore lookups "
+            "for orderings. Orderings should be an unchanging, unique or "
             'nearly-unique field on the model, such as "-created" or "pk".'
         )
 
-        assert isinstance(ordering, (str, list, tuple)), (
-            'Invalid ordering. Expected string or tuple, but got {type}'.format(
-                type=type(ordering).__name__
-            )
+        assert isinstance(
+            ordering, (str, list, tuple)
+        ), "Invalid ordering. Expected string or tuple, but got {type}".format(
+            type=type(ordering).__name__
         )
 
         if isinstance(ordering, str):
@@ -859,16 +899,16 @@ class CursorPagination(BasePagination):
             return None
 
         try:
-            querystring = b64decode(encoded.encode('ascii')).decode('ascii')
+            querystring = b64decode(encoded.encode("ascii")).decode("ascii")
             tokens = parse.parse_qs(querystring, keep_blank_values=True)
 
-            offset = tokens.get('o', ['0'])[0]
+            offset = tokens.get("o", ["0"])[0]
             offset = _positive_int(offset, cutoff=self.offset_cutoff)
 
-            reverse = tokens.get('r', ['0'])[0]
+            reverse = tokens.get("r", ["0"])[0]
             reverse = bool(int(reverse))
 
-            position = tokens.get('p', [None])[0]
+            position = tokens.get("p", [None])[0]
         except (TypeError, ValueError):
             raise NotFound(self.invalid_cursor_message)
 
@@ -880,18 +920,18 @@ class CursorPagination(BasePagination):
         """
         tokens = {}
         if cursor.offset != 0:
-            tokens['o'] = str(cursor.offset)
+            tokens["o"] = str(cursor.offset)
         if cursor.reverse:
-            tokens['r'] = '1'
+            tokens["r"] = "1"
         if cursor.position is not None:
-            tokens['p'] = cursor.position
+            tokens["p"] = cursor.position
 
         querystring = parse.urlencode(tokens, doseq=True)
-        encoded = b64encode(querystring.encode('ascii')).decode('ascii')
+        encoded = b64encode(querystring.encode("ascii")).decode("ascii")
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
     def _get_position_from_instance(self, instance, ordering):
-        field_name = ordering[0].lstrip('-')
+        field_name = ordering[0].lstrip("-")
         if isinstance(instance, dict):
             attr = instance[field_name]
         else:
@@ -899,39 +939,43 @@ class CursorPagination(BasePagination):
         return None if attr is None else str(attr)
 
     def get_paginated_response(self, data):
-        return Response({
-            'next': self.get_next_link(),
-            'previous': self.get_previous_link(),
-            'results': data,
-        })
+        return Response(
+            {
+                "next": self.get_next_link(),
+                "previous": self.get_previous_link(),
+                "results": data,
+            }
+        )
 
     def get_paginated_response_schema(self, schema):
         return {
-            'type': 'object',
-            'required': ['results'],
-            'properties': {
-                'next': {
-                    'type': 'string',
-                    'nullable': True,
-                    'format': 'uri',
-                    'example': 'http://api.example.org/accounts/?{cursor_query_param}=cD00ODY%3D"'.format(
-                        cursor_query_param=self.cursor_query_param)
+            "type": "object",
+            "required": ["results"],
+            "properties": {
+                "next": {
+                    "type": "string",
+                    "nullable": True,
+                    "format": "uri",
+                    "example": 'http://api.example.org/accounts/?{cursor_query_param}=cD00ODY%3D"'.format(
+                        cursor_query_param=self.cursor_query_param
+                    ),
                 },
-                'previous': {
-                    'type': 'string',
-                    'nullable': True,
-                    'format': 'uri',
-                    'example': 'http://api.example.org/accounts/?{cursor_query_param}=cj0xJnA9NDg3'.format(
-                        cursor_query_param=self.cursor_query_param)
+                "previous": {
+                    "type": "string",
+                    "nullable": True,
+                    "format": "uri",
+                    "example": "http://api.example.org/accounts/?{cursor_query_param}=cj0xJnA9NDg3".format(
+                        cursor_query_param=self.cursor_query_param
+                    ),
                 },
-                'results': schema,
+                "results": schema,
             },
         }
 
     def get_html_context(self):
         return {
-            'previous_url': self.get_previous_link(),
-            'next_url': self.get_next_link()
+            "previous_url": self.get_previous_link(),
+            "next_url": self.get_next_link(),
         }
 
     def to_html(self):
@@ -940,19 +984,25 @@ class CursorPagination(BasePagination):
         return template.render(context)
 
     def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        assert (
+            coreapi is not None
+        ), "coreapi must be installed to use `get_schema_fields()`"
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+            warnings.warn(
+                "CoreAPI compatibility is deprecated and will be removed in DRF 3.17",
+                RemovedInDRF317Warning,
+            )
+        assert (
+            coreschema is not None
+        ), "coreschema must be installed to use `get_schema_fields()`"
         fields = [
             coreapi.Field(
                 name=self.cursor_query_param,
                 required=False,
-                location='query',
+                location="query",
                 schema=coreschema.String(
-                    title='Cursor',
-                    description=force_str(self.cursor_query_description)
-                )
+                    title="Cursor", description=force_str(self.cursor_query_description)
+                ),
             )
         ]
         if self.page_size_query_param is not None:
@@ -960,11 +1010,11 @@ class CursorPagination(BasePagination):
                 coreapi.Field(
                     name=self.page_size_query_param,
                     required=False,
-                    location='query',
+                    location="query",
                     schema=coreschema.Integer(
-                        title='Page size',
-                        description=force_str(self.page_size_query_description)
-                    )
+                        title="Page size",
+                        description=force_str(self.page_size_query_description),
+                    ),
                 )
             )
         return fields
@@ -972,24 +1022,24 @@ class CursorPagination(BasePagination):
     def get_schema_operation_parameters(self, view):
         parameters = [
             {
-                'name': self.cursor_query_param,
-                'required': False,
-                'in': 'query',
-                'description': force_str(self.cursor_query_description),
-                'schema': {
-                    'type': 'string',
+                "name": self.cursor_query_param,
+                "required": False,
+                "in": "query",
+                "description": force_str(self.cursor_query_description),
+                "schema": {
+                    "type": "string",
                 },
             }
         ]
         if self.page_size_query_param is not None:
             parameters.append(
                 {
-                    'name': self.page_size_query_param,
-                    'required': False,
-                    'in': 'query',
-                    'description': force_str(self.page_size_query_description),
-                    'schema': {
-                        'type': 'integer',
+                    "name": self.page_size_query_param,
+                    "required": False,
+                    "in": "query",
+                    "description": force_str(self.page_size_query_description),
+                    "schema": {
+                        "type": "integer",
                     },
                 }
             )

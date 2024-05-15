@@ -1,17 +1,3 @@
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.exceptions import PermissionDenied
-from django.core.validators import validate_email
-from django.forms import ValidationError
-from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import never_cache
-from django.views.decorators.debug import sensitive_post_parameters
-from django.views.generic.base import TemplateView
-from django.views.generic.edit import FormView
-
 from allauth import app_settings as allauth_app_settings
 from allauth.account import app_settings
 from allauth.account.adapter import get_adapter
@@ -56,7 +42,19 @@ from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.core.internal.httpkit import redirect
 from allauth.decorators import rate_limit
 from allauth.utils import get_form_class
-
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import PermissionDenied
+from django.core.validators import validate_email
+from django.forms import ValidationError
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
+from django.views.decorators.debug import sensitive_post_parameters
+from django.views.generic.base import TemplateView
+from django.views.generic.edit import FormView
 
 INTERNAL_RESET_SESSION_KEY = "_password_reset_key"
 

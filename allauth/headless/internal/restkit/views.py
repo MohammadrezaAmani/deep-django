@@ -1,10 +1,9 @@
 import json
 
-from django.http import HttpResponseBadRequest
-from django.views.generic import View
-
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.headless.internal.restkit.response import ErrorResponse
+from django.http import HttpResponseBadRequest
+from django.views.generic import View
 
 
 class RESTView(View):

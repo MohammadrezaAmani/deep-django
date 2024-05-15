@@ -1,10 +1,5 @@
 import requests
 
-from django.conf import settings
-from django.core.exceptions import PermissionDenied, ValidationError
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
-
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.helpers import (
     complete_social_login,
@@ -17,7 +12,10 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2CallbackView,
     OAuth2LoginView,
 )
-
+from django.conf import settings
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import View
 
 CERTS_URL = (
     getattr(settings, "SOCIALACCOUNT_PROVIDERS", {})

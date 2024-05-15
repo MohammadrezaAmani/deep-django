@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('authtoken', '0003_tokenproxy'),
+        ("authtoken", "0003_tokenproxy"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='tokenproxy',
-            options={'verbose_name': 'Token', 'verbose_name_plural': 'Tokens'},
+            name="tokenproxy",
+            options={"verbose_name": "Token", "verbose_name_plural": "Tokens"},
         ),
     ]

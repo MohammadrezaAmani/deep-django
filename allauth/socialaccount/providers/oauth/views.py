@@ -1,23 +1,15 @@
 import logging
 
-from django.urls import reverse
-
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.helpers import (
     complete_social_login,
     render_authentication_error,
 )
 from allauth.socialaccount.models import SocialLogin, SocialToken
-from allauth.socialaccount.providers.base.constants import (
-    AuthAction,
-    AuthError,
-)
+from allauth.socialaccount.providers.base.constants import AuthAction, AuthError
 from allauth.socialaccount.providers.base.mixins import OAuthLoginMixin
-from allauth.socialaccount.providers.oauth.client import (
-    OAuthClient,
-    OAuthError,
-)
-
+from allauth.socialaccount.providers.oauth.client import OAuthClient, OAuthError
+from django.urls import reverse
 
 logger = logging.getLogger(__name__)
 

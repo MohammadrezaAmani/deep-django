@@ -1,7 +1,3 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.urls import reverse
-
 from allauth import app_settings as allauth_settings
 from allauth.account import app_settings as account_settings
 from allauth.account.utils import user_display
@@ -10,6 +6,9 @@ from allauth.socialaccount import app_settings
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.internal import flows
 from allauth.socialaccount.providers.base import AuthError
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
 
 
 def render_authentication_error(

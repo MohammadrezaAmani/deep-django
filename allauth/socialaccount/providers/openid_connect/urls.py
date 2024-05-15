@@ -1,9 +1,7 @@
+from allauth.socialaccount import app_settings
 from django.urls import include, path, re_path
 
-from allauth.socialaccount import app_settings
-
 from . import views
-
 
 urlpatterns = [
     re_path(

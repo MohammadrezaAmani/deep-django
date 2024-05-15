@@ -1,13 +1,5 @@
 import base64
 
-from django.contrib.auth.decorators import login_required
-from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.urls import reverse, reverse_lazy
-from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView
-from django.views.generic.edit import FormView
-
 from allauth.account import app_settings as account_settings
 from allauth.account.decorators import reauthentication_required
 from allauth.account.stages import LoginStageController
@@ -26,6 +18,13 @@ from allauth.mfa.models import Authenticator
 from allauth.mfa.stages import AuthenticateStage
 from allauth.mfa.utils import is_mfa_enabled
 from allauth.utils import get_form_class
+from django.contrib.auth.decorators import login_required
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
 
 
 class AuthenticateView(FormView):

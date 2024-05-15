@@ -1,7 +1,6 @@
-from django.views import View
-
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.providers.base.utils import respond_to_login_on_get
+from django.views import View
 
 
 class BaseLoginView(View):

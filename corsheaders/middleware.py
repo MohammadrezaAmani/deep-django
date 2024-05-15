@@ -1,20 +1,16 @@
 from __future__ import annotations
 
 import re
-from typing import Awaitable
-from typing import Callable
-from urllib.parse import SplitResult
-from urllib.parse import urlsplit
+from typing import Awaitable, Callable
+from urllib.parse import SplitResult, urlsplit
 
-from asgiref.sync import iscoroutinefunction
-from asgiref.sync import markcoroutinefunction
-from django.http import HttpRequest
-from django.http import HttpResponse
-from django.http.response import HttpResponseBase
-from django.utils.cache import patch_vary_headers
+from asgiref.sync import iscoroutinefunction, markcoroutinefunction
 
 from corsheaders.conf import conf
 from corsheaders.signals import check_request_enabled
+from django.http import HttpRequest, HttpResponse
+from django.http.response import HttpResponseBase
+from django.utils.cache import patch_vary_headers
 
 ACCESS_CONTROL_ALLOW_ORIGIN = "access-control-allow-origin"
 ACCESS_CONTROL_EXPOSE_HEADERS = "access-control-expose-headers"

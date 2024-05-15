@@ -1,5 +1,3 @@
-from django.urls import reverse
-
 from allauth.account import app_settings
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
@@ -9,6 +7,7 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2LoginView,
 )
 from allauth.utils import build_absolute_uri
+from django.urls import reverse
 
 from .client import FeishuOAuth2Client
 

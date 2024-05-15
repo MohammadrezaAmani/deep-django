@@ -1,12 +1,11 @@
 from typing import Optional
 
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-
 from allauth.account.utils import get_next_redirect_url, get_request_param
 from allauth.socialaccount import app_settings
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.internal import statekit
 from allauth.socialaccount.providers.base.constants import AuthProcess
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 
 
 class ProviderException(Exception):

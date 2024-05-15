@@ -2,6 +2,12 @@ import unicodedata
 from collections import OrderedDict
 from typing import Optional
 
+from allauth.account import app_settings, signals
+from allauth.account.adapter import get_adapter
+from allauth.account.internal import flows
+from allauth.account.models import Login
+from allauth.core.internal import httpkit
+from allauth.utils import get_request_param, import_callable, valid_email_or_none
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model
@@ -10,17 +16,6 @@ from django.db import models
 from django.db.models import Q
 from django.utils.encoding import force_str
 from django.utils.http import base36_to_int, int_to_base36
-
-from allauth.account import app_settings, signals
-from allauth.account.adapter import get_adapter
-from allauth.account.internal import flows
-from allauth.account.models import Login
-from allauth.core.internal import httpkit
-from allauth.utils import (
-    get_request_param,
-    import_callable,
-    valid_email_or_none,
-)
 
 
 def _unicode_ci_compare(s1, s2):

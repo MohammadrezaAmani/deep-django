@@ -1,14 +1,10 @@
 from urllib.parse import parse_qs, urlparse
 
-from django.contrib.sites.models import Site
-from django.urls import reverse
-
-from allauth.socialaccount.adapter import (
-    DefaultSocialAccountAdapter,
-    get_adapter,
-)
+from allauth.socialaccount.adapter import DefaultSocialAccountAdapter, get_adapter
 from allauth.socialaccount.internal import statekit
 from allauth.socialaccount.models import SocialApp
+from django.contrib.sites.models import Site
+from django.urls import reverse
 
 
 class TestSocialAccountAdapter(DefaultSocialAccountAdapter):

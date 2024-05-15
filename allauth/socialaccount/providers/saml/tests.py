@@ -1,9 +1,6 @@
 from unittest.mock import Mock, patch
 from urllib.parse import parse_qs, urlparse
 
-from django.urls import reverse, reverse_lazy
-from django.utils.http import urlencode
-
 import pytest
 from pytest_django.asserts import assertTemplateUsed
 
@@ -12,6 +9,8 @@ from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.internal import statekit
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.saml.utils import build_saml_config
+from django.urls import reverse, reverse_lazy
+from django.utils.http import urlencode
 
 
 @pytest.mark.parametrize(

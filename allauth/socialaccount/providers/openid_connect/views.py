@@ -1,5 +1,3 @@
-from django.urls import reverse
-
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.providers.oauth2.views import (
     OAuth2Adapter,
@@ -7,6 +5,7 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2LoginView,
 )
 from allauth.utils import build_absolute_uri
+from django.urls import reverse
 
 
 class OpenIDConnectOAuth2Adapter(OAuth2Adapter):

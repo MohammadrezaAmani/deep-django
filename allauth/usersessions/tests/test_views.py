@@ -1,9 +1,8 @@
-from django.test import Client
-from django.urls import reverse
-
 import pytest
 
 from allauth.usersessions.models import UserSession
+from django.test import Client
+from django.urls import reverse
 
 
 def test_overall_flow(user, user_password):

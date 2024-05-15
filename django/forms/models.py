@@ -835,7 +835,9 @@ class BaseModelFormSet(BaseFormSet, AltersData):
                         d._get_pk_val()
                         if hasattr(d, "_get_pk_val")
                         # Prevent "unhashable type: list" errors later on.
-                        else tuple(d) if isinstance(d, list) else d
+                        else tuple(d)
+                        if isinstance(d, list)
+                        else d
                     )
                     for d in row_data
                 )

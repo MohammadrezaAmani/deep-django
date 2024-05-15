@@ -1,19 +1,18 @@
 from unittest.mock import ANY, patch
 
-import django
-from django.conf import settings
-from django.core.cache import cache
-from django.test import Client
-from django.urls import reverse
-
 import pytest
 from pytest_django.asserts import assertFormError, assertTemplateUsed
 
+import django
 from allauth.account.authentication import AUTHENTICATION_METHODS_SESSION_KEY
 from allauth.account.models import EmailAddress
 from allauth.mfa import app_settings
 from allauth.mfa.adapter import get_adapter
 from allauth.mfa.models import Authenticator
+from django.conf import settings
+from django.core.cache import cache
+from django.test import Client
+from django.urls import reverse
 
 
 @pytest.mark.parametrize(

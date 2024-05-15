@@ -1,6 +1,5 @@
 from allauth.socialaccount.sessions import LoginSession
 
-
 APPLE_SESSION_COOKIE_NAME = "apple-login-session"
 
 

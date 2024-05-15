@@ -1,8 +1,7 @@
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.core.exceptions import ImmediateHttpResponse
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 
 class PreLoginRedirectAccountAdapter(DefaultAccountAdapter):

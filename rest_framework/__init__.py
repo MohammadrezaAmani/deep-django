@@ -9,24 +9,24 @@ ______ _____ _____ _____    __
 
 import django
 
-__title__ = 'Django REST framework'
-__version__ = '3.15.1'
-__author__ = 'Tom Christie'
-__license__ = 'BSD 3-Clause'
-__copyright__ = 'Copyright 2011-2023 Encode OSS Ltd'
+__title__ = "Django REST framework"
+__version__ = "3.15.1"
+__author__ = "Tom Christie"
+__license__ = "BSD 3-Clause"
+__copyright__ = "Copyright 2011-2023 Encode OSS Ltd"
 
 # Version synonym
 VERSION = __version__
 
 # Header encoding (see RFC5987)
-HTTP_HEADER_ENCODING = 'iso-8859-1'
+HTTP_HEADER_ENCODING = "iso-8859-1"
 
 # Default datetime input and output formats
-ISO_8601 = 'iso-8601'
+ISO_8601 = "iso-8601"
 
 
 if django.VERSION < (3, 2):
-    default_app_config = 'rest_framework.apps.RestFrameworkConfig'
+    default_app_config = "rest_framework.apps.RestFrameworkConfig"
 
 
 class RemovedInDRF315Warning(DeprecationWarning):

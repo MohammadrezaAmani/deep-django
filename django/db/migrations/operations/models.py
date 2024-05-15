@@ -58,7 +58,9 @@ class CreateModel(ModelOperation):
                 (
                     base._meta.label_lower
                     if hasattr(base, "_meta")
-                    else base.lower() if isinstance(base, str) else base
+                    else base.lower()
+                    if isinstance(base, str)
+                    else base
                 )
                 for base in self.bases
             ),

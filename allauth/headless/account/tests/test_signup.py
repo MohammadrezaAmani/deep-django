@@ -1,9 +1,8 @@
 from unittest.mock import ANY
 
-from django.contrib.auth.models import User
-
 from allauth.account.models import EmailAddress, EmailConfirmationHMAC
 from allauth.headless.constants import Flow
+from django.contrib.auth.models import User
 
 
 def test_signup(

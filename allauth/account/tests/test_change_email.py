@@ -1,15 +1,14 @@
 import json
 from unittest.mock import patch
 
-from django.contrib.auth import get_user_model
-from django.urls import reverse
-
 import pytest
 from pytest_django.asserts import assertTemplateNotUsed, assertTemplateUsed
 
 from allauth.account.app_settings import AuthenticationMethod
 from allauth.account.models import EmailAddress, EmailConfirmationHMAC
 from allauth.account.utils import user_email
+from django.contrib.auth import get_user_model
+from django.urls import reverse
 
 
 def test_ajax_get(auth_client, user):

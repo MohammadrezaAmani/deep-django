@@ -4,7 +4,6 @@ Provide urlresolver functions that return fully qualified URLs or view names
 from django.urls import NoReverseMatch
 from django.urls import reverse as django_reverse
 from django.utils.functional import lazy
-
 from rest_framework.settings import api_settings
 from rest_framework.utils.urls import replace_query_param
 
@@ -35,7 +34,7 @@ def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra
     to the versioning scheme instance, so that the resulting URL
     can be modified if needed.
     """
-    scheme = getattr(request, 'versioning_scheme', None)
+    scheme = getattr(request, "versioning_scheme", None)
     if scheme is not None:
         try:
             url = scheme.reverse(viewname, args, kwargs, request, format, **extra)
@@ -56,7 +55,7 @@ def _reverse(viewname, args=None, kwargs=None, request=None, format=None, **extr
     """
     if format is not None:
         kwargs = kwargs or {}
-        kwargs['format'] = format
+        kwargs["format"] = format
     url = django_reverse(viewname, args=args, kwargs=kwargs, **extra)
     if request:
         return request.build_absolute_uri(url)

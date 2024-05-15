@@ -1,12 +1,5 @@
 import json
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser
-from django.core import mail
-from django.test.utils import override_settings
-from django.urls import reverse, reverse_lazy
-from django.utils.http import urlencode
-
 import pytest
 from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
@@ -15,6 +8,12 @@ from allauth.account.forms import ResetPasswordForm, default_token_generator
 from allauth.account.models import EmailAddress
 from allauth.account.utils import user_pk_to_url_str
 from allauth.tests import TestCase
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
+from django.core import mail
+from django.test.utils import override_settings
+from django.urls import reverse, reverse_lazy
+from django.utils.http import urlencode
 
 
 @pytest.fixture

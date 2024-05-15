@@ -1,6 +1,5 @@
 import time
 
-
 AUTHENTICATION_METHODS_SESSION_KEY = "account_authentication_methods"
 
 

@@ -1,10 +1,9 @@
 import typing
 
-from django.contrib.sessions.backends.base import SessionBase
-from django.http import HttpRequest
-
 from allauth.headless.internal import sessionkit
 from allauth.headless.tokens.base import AbstractTokenStrategy
+from django.contrib.sessions.backends.base import SessionBase
+from django.http import HttpRequest
 
 
 class SessionTokenStrategy(AbstractTokenStrategy):

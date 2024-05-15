@@ -4,7 +4,6 @@ from urllib.parse import urlparse
 from django.conf import settings
 from django.utils.cache import patch_vary_headers
 
-
 engine = import_module(settings.SESSION_ENGINE)
 SessionStore = engine.SessionStore
 

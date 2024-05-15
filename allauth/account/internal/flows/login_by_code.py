@@ -1,15 +1,13 @@
 import time
 
-from django.contrib import messages
-from django.contrib.auth import get_user_model
-
 from allauth.account import app_settings
 from allauth.account.adapter import get_adapter
 from allauth.account.authentication import record_authentication
 from allauth.account.internal.flows.login import perform_login
 from allauth.account.internal.flows.signup import send_unknown_account_mail
 from allauth.account.models import Login
-
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 
 LOGIN_CODE_SESSION_KEY = "account_login_code"
 

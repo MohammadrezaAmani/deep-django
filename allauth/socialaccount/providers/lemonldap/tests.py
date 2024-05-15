@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from allauth.socialaccount.providers.lemonldap.provider import (
-    LemonLDAPProvider,
-)
+from allauth.socialaccount.providers.lemonldap.provider import LemonLDAPProvider
 from allauth.socialaccount.tests import OAuth2TestsMixin
 from allauth.tests import MockedResponse, TestCase
 

@@ -1,6 +1,6 @@
-from django.urls import reverse
-
 import pytest
+
+from django.urls import reverse
 
 
 def test_password_reset_flow(

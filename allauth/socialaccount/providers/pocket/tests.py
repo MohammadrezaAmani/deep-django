@@ -1,9 +1,8 @@
 from urllib.parse import parse_qs, urlencode, urlparse
 
-from django.urls import reverse
-
 from allauth.socialaccount.tests import OAuthTestsMixin
 from allauth.tests import MockedResponse, TestCase, mocked_response
+from django.urls import reverse
 
 from .provider import PocketProvider
 

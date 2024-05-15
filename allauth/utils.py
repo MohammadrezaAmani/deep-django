@@ -8,6 +8,7 @@ import unicodedata
 from collections import OrderedDict
 from urllib.parse import urlsplit
 
+from allauth import app_settings
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import (
@@ -28,9 +29,6 @@ from django.db.models.fields import (
 )
 from django.utils import dateparse
 from django.utils.encoding import force_bytes, force_str
-
-from allauth import app_settings
-
 
 # Magic number 7: if you run into collisions with this number, then you are
 # of big enough scale to start investing in a decent user model...

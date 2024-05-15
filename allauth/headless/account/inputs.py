@@ -1,6 +1,3 @@
-from django.core.exceptions import ImproperlyConfigured
-from django.core.validators import validate_email
-
 from allauth.account import app_settings as account_app_settings
 from allauth.account.adapter import get_adapter as get_account_adapter
 from allauth.account.forms import (
@@ -17,6 +14,8 @@ from allauth.account.models import EmailAddress, get_emailconfirmation_model
 from allauth.core import context
 from allauth.headless.adapter import get_adapter
 from allauth.headless.internal.restkit import inputs
+from django.core.exceptions import ImproperlyConfigured
+from django.core.validators import validate_email
 
 
 class SignupInput(BaseSignupForm, inputs.Input):
