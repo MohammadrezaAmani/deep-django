@@ -5,7 +5,7 @@ from typing import List
 
 import aiofiles
 
-PATH = "confluent_kafka"
+PATH = "pika"
 LANG = "fa"
 
 
