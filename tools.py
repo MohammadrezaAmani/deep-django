@@ -5,8 +5,8 @@ from typing import List
 
 import aiofiles
 
-PATH = "celery"
-LANG = "fa"
+PATH = "graphene_django"
+LANG = ""
 
 
 def source_to_list(code: str) -> List[str]:
