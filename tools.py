@@ -4,7 +4,7 @@ import asyncio
 import aiofiles
 import os
 
-PATH = "corsheaders"
+PATH = "allauth"
 
 
 def source_to_list(code: str) -> List[str]:
