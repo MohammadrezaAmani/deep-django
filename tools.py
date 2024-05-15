@@ -5,7 +5,8 @@ from typing import List
 
 import aiofiles
 
-PATH = "allauth"
+PATH = "."
+LANG = "fa"
 
 
 def source_to_list(code: str) -> List[str]:
@@ -54,11 +55,11 @@ async def do_conversion(path: str):
     code = load_code(path)
     cells = to_ipynb(code)
     ipynb = to_json(cells)
-    await write_ipynb(path.replace(".py", ".ipynb"), ipynb)
+    lang = "_" + LANG if LANG else ""
+    await write_ipynb(path.replace(".py", lang + ".ipynb"), ipynb)
 
 
 async def main():
-    # walk in files and folders of path and convert its python to ipynb format
     for root, dirs, files in os.walk(PATH):
         for file in files:
             if file.endswith(".py"):
