@@ -5,7 +5,7 @@ from typing import List
 
 import aiofiles
 
-PATH = "graphene_django"
+PATH = "pika"
 LANG = ""
 
 
