@@ -5,8 +5,8 @@ from typing import List
 
 import aiofiles
 
-PATH = "pika"
-LANG = ""
+PATH = "confluent_kafka"
+LANG = "fa"
 
 
 def source_to_list(code: str) -> List[str]:
